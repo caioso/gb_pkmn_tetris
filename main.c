@@ -148,8 +148,22 @@ void main(void)
     SHOW_BKG;
 
     // Loop forever
-    uint8_t i = 0;
+    uint8_t key = 0;
     while(1) {
+        key = joypad();
+
+        if (key & J_UP) {
+            scroll_bkg(0, 1);
+        } else if (key & J_DOWN) {
+            scroll_bkg(0, -1);
+        }
+
+        if (key & J_RIGHT) {
+            scroll_bkg(-1, 0);
+        } else if (key & J_LEFT) {
+            scroll_bkg(1, 0);
+        }
+
 		// Done processing, yield CPU and wait for start of next frame
         wait_vbl_done();
     }
