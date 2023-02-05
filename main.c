@@ -3,6 +3,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/* game includes */
+#include "general_board_manager.h"
+#include "board_initialization_templates.h"
+
 /* Bank of tiles. */
 #define bar_cBank 0
 
@@ -73,7 +77,7 @@
 #define bar_cCGBPal6c3 12672
 
 /* Gameboy Color palette 7 */
-#define bar_cCGBPal7c0 32767
+#define bar_cCGBPal7c0 31663
 #define bar_cCGBPal7c1 25368
 #define bar_cCGBPal7c2 19026
 #define bar_cCGBPal7c3 12684
@@ -121,8 +125,15 @@ const uint16_t bar_p[] =
   bar_cCGBPal7c0,bar_cCGBPal7c1,bar_cCGBPal7c2,bar_cCGBPal7c3
 };
 
+
 void main(void)
 {
+    /* Temporary: Initialize general board */
+    board_t general_board;
+
+    /* Initialize board */
+    gbm_initialize_board(&general_board, board_initialization_template);
+
     set_bkg_palette( BKGF_CGB_PAL7, 1, &bar_p[0] );
     set_bkg_palette( BKGF_CGB_PAL6, 1, &bar_p[4] );
     set_bkg_palette( BKGF_CGB_PAL5, 1, &bar_p[8] );
@@ -132,25 +143,26 @@ void main(void)
     set_bkg_palette( BKGF_CGB_PAL1, 1, &bar_p[24] );
     set_bkg_palette( BKGF_CGB_PAL0, 1, &bar_p[28] );
 
-    /* CHR code transfer */
+    /* bg-tules code transfer */
     set_bkg_data(1, 8, smile);
-    set_bkg_tile_xy(0, 0, 1);
-    set_bkg_tile_xy(1, 0, 3);
-    set_bkg_tile_xy(0, 1, 2);
-    set_bkg_tile_xy(1, 1, 4);
 
-    /* Change background back to attributes */
-    VBK_REG = VBK_ATTRIBUTES;
-    set_bkg_tile_xy(0, 0, 4);
-    set_bkg_tile_xy(1, 0, 2);
-    set_bkg_tile_xy(0, 1, 3);
-    set_bkg_tile_xy(1, 1, 5);
+    /* show background*/
     SHOW_BKG;
+
+    /* test: set some tiles to see the change */
+    general_board.blocks[5][5].type = BLOCK_TYPE_BLUE;
+    general_board.blocks[6][5].type = BLOCK_TYPE_BLUE;
+    general_board.blocks[7][5].type = BLOCK_TYPE_BLUE;
+    general_board.blocks[7][6].type = BLOCK_TYPE_BLUE;
+    general_board.dirty = true;
 
     // Loop forever
     uint8_t key = 0;
     while(1) {
         key = joypad();
+
+        /* Board update */
+        gbm_render_board_if_needed(&general_board);
 
         if (key & J_UP) {
             scroll_bkg(0, 1);
