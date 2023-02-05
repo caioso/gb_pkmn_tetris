@@ -4,8 +4,10 @@
 #include <stdio.h>
 
 /* game includes */
-#include "general_board_manager.h"
 #include "board_initialization_templates.h"
+#include "constants.h"
+#include "general_board_manager.h"
+#include "tetramino.h"
 
 /* Bank of tiles. */
 #define bar_cBank 0
@@ -132,28 +134,53 @@ void main(void)
     board_t general_board;
 
     /* Initialize board */
-    gbm_initialize_board(&general_board, board_initialization_template);
+    gbm_initialize_board(&general_board,
+                         board_initialization_template,
+                         BLOCK_TYPE_CYAN);
 
-    set_bkg_palette( BKGF_CGB_PAL7, 1, &bar_p[0] );
-    set_bkg_palette( BKGF_CGB_PAL6, 1, &bar_p[4] );
-    set_bkg_palette( BKGF_CGB_PAL5, 1, &bar_p[8] );
-    set_bkg_palette( BKGF_CGB_PAL4, 1, &bar_p[12] );
-    set_bkg_palette( BKGF_CGB_PAL3, 1, &bar_p[16] );
-    set_bkg_palette( BKGF_CGB_PAL2, 1, &bar_p[20] );
-    set_bkg_palette( BKGF_CGB_PAL1, 1, &bar_p[24] );
-    set_bkg_palette( BKGF_CGB_PAL0, 1, &bar_p[28] );
+    /* Temporary: Initialize tetramino */
+    tetramino_t player_tetramino;
 
-    /* bg-tules code transfer */
+    /* Initialize tetramino */
+    t_initialize_tetramino(&player_tetramino,
+                           TETRAMINO_TYPE_J,
+                           MAIN_TETRAMINO_SPRITE_INDEX);
+
+    /* Background setup */
+    set_bkg_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
+    set_bkg_palette(BKGF_CGB_PAL6, 1, &bar_p[4]);
+    set_bkg_palette(BKGF_CGB_PAL5, 1, &bar_p[8]);
+    set_bkg_palette(BKGF_CGB_PAL4, 1, &bar_p[12]);
+    set_bkg_palette(BKGF_CGB_PAL3, 1, &bar_p[16]);
+    set_bkg_palette(BKGF_CGB_PAL2, 1, &bar_p[20]);
+    set_bkg_palette(BKGF_CGB_PAL1, 1, &bar_p[24]);
+    set_bkg_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
+
+    /* Background tiles code transfer */
     set_bkg_data(1, 8, smile);
 
-    /* show background*/
+    /* Sprite setup */
+    set_sprite_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
+    set_sprite_palette(BKGF_CGB_PAL6, 1, &bar_p[4]);
+    set_sprite_palette(BKGF_CGB_PAL5, 1, &bar_p[8]);
+    set_sprite_palette(BKGF_CGB_PAL4, 1, &bar_p[12]);
+    set_sprite_palette(BKGF_CGB_PAL3, 1, &bar_p[16]);
+    set_sprite_palette(BKGF_CGB_PAL2, 1, &bar_p[20]);
+    set_sprite_palette(BKGF_CGB_PAL1, 1, &bar_p[24]);
+    set_sprite_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
+
+    /* Sprite tiles code transfer */
+    set_sprite_data(1, 8, smile);
+
+    /* show background */
     SHOW_BKG;
+    SHOW_SPRITES;
 
     /* test: set some tiles to see the change */
-    general_board.blocks[5][5].type = BLOCK_TYPE_BLUE;
-    general_board.blocks[6][5].type = BLOCK_TYPE_BLUE;
-    general_board.blocks[7][5].type = BLOCK_TYPE_BLUE;
-    general_board.blocks[7][6].type = BLOCK_TYPE_BLUE;
+    general_board.blocks[5][5] = BLOCK_TYPE_BLUE;
+    general_board.blocks[6][5] = BLOCK_TYPE_BLUE;
+    general_board.blocks[7][5] = BLOCK_TYPE_BLUE;
+    general_board.blocks[7][6] = BLOCK_TYPE_BLUE;
     general_board.dirty = true;
 
     // Loop forever
@@ -162,7 +189,10 @@ void main(void)
         key = joypad();
 
         /* Board update */
-        gbm_render_board_if_needed(&general_board);
+        gbm_update_board_if_needed(&general_board);
+
+        /* Tetramino ipdate */
+        t_update_tetramino(&player_tetramino);
 
         if (key & J_UP) {
             scroll_bkg(0, 1);

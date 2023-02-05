@@ -1,0 +1,4 @@
+#pragma once
+
+#define BLOCK_SIDE_IN_PIXELS (0x08)
+#define MAIN_TETRAMINO_SPRITE_INDEX (0x00)
