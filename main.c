@@ -5,6 +5,7 @@
 
 /* game includes */
 #include "board_initialization_templates.h"
+#include "collision_detector.h"
 #include "constants.h"
 #include "general_board_manager.h"
 #include "tetramino.h"
@@ -143,7 +144,7 @@ void main(void)
 
     /* Initialize tetramino */
     t_initialize_tetramino(&player_tetramino,
-                           TETRAMINO_TYPE_J,
+                           TETRAMINO_TYPE_I,
                            MAIN_TETRAMINO_SPRITE_INDEX);
 
     /* Background setup */
@@ -194,16 +195,32 @@ void main(void)
         /* Tetramino ipdate */
         t_update_tetramino(&player_tetramino);
 
+        int8_t offset_x = 0;
+        int8_t offset_y = 0;
+
         if (key & J_UP) {
-            scroll_bkg(0, 1);
+            if (cd_detect_collision(&general_board, &player_tetramino, 0, -1) == false) {
+                offset_y = -1;
+            }
         } else if (key & J_DOWN) {
-            scroll_bkg(0, -1);
+            if (cd_detect_collision(&general_board, &player_tetramino, 0, 1) == false) {
+                offset_y = 1;
+            }
         }
 
         if (key & J_RIGHT) {
-            scroll_bkg(-1, 0);
+            if (cd_detect_collision(&general_board, &player_tetramino, 1, 0) == false) {
+                offset_x = 1;
+            }
         } else if (key & J_LEFT) {
-            scroll_bkg(1, 0);
+            if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false) {
+                offset_x = -1;
+            }
+        }
+
+        if (offset_x != 0 || offset_y != 0) {
+            t_move_tetramino_by(&player_tetramino, offset_x, offset_y);
+            t_update_tetramino(&player_tetramino);
         }
 
 		// Done processing, yield CPU and wait for start of next frame
