@@ -7,68 +7,76 @@ typedef struct point_t {
 
 bool do_overlap(point_t * r1, point_t * r2);
 
-bool cd_detect_collision(board_t *board, tetramino_t *tetramino, int8_t x, int8_t y) {
+bool cd_detect_collision(board_t *board, tetramino_t * tetramino, int8_t x, int8_t y) {
+  uint8_t i = 0;
   bool collision = false;
-  uint8_t board_col = (tetramino->x - 16 + x) >> 3;
-  uint8_t board_row = (tetramino->y - 16 + y) >> 3;
-  point_t tetramino_rectangle = {
-    .x = tetramino->x,
-    .y = tetramino->y,
-  };
-  point_t board_rectangle = {
-    .x = 0,
-    .y = 0,
-  };
+  for (i = 0; i < 4; i++) {
+    uint8_t tetramino_x = tetramino->x + tetramino_sprite_position_offset[tetramino->type][i][0];
+    uint8_t tetramino_y = tetramino->y + tetramino_sprite_position_offset[tetramino->type][i][1];
+    uint8_t board_col = (tetramino_x - 16 + x) >> 3;
+    uint8_t board_row = (tetramino_y - 16 + y) >> 3;
+    point_t tetramino_rectangle = {
+      .x = tetramino_x,
+      .y = tetramino_y,
+    };
+    point_t board_rectangle = {
+      .x = 0,
+      .y = 0,
+    };
 
-  if (x > 0) {
-    if (board->blocks[board_row][board_col + 1] == 1) {
-      board_rectangle.x = (((board_col + 1) << 3) + 16);
-      board_rectangle.y = ((board_row << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
-    }
-    if (collision == false && board->blocks[board_row + 1][board_col + 1] == 1) {
-      board_rectangle.x = (((board_col + 1) << 3) + 16);
-      board_rectangle.y = (((board_row + 1) << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
-    }
-  } else if (x < 0) {
-    if (board->blocks[board_row][board_col] == 1) {
-      board_rectangle.x = ((board_col << 3) + 16);
-      board_rectangle.y = ((board_row << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
-    }
-    if (collision == false && board->blocks[board_row + 1][board_col] == 1) {
-      board_rectangle.x = ((board_col << 3) + 16);
-      board_rectangle.y = (((board_row + 1) << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+    if (x > 0) {
+      if (board->blocks[board_row][board_col + 1] == 1) {
+        board_rectangle.x = (((board_col + 1) << 3) + 16);
+        board_rectangle.y = ((board_row << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+      if ((tetramino_y) % 8 != 0x00 && collision == false && board->blocks[board_row + 1][board_col + 1] == 1) {
+        board_rectangle.x = (((board_col + 1) << 3) + 16);
+        board_rectangle.y = (((board_row + 1) << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+    } else if (x < 0) {
+      if (board->blocks[board_row][board_col] == 1) {
+        board_rectangle.x = ((board_col << 3) + 16);
+        board_rectangle.y = ((board_row << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+      if ((tetramino_y) % 8 != 0x00 && collision == false && board->blocks[board_row + 1][board_col] == 1) {
+        board_rectangle.x = ((board_col << 3) + 16);
+        board_rectangle.y = (((board_row + 1) << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+
     }
 
+    if (y > 0) {
+      if (board->blocks[board_row + 1][board_col] == 1) {
+        board_rectangle.x = ((board_col << 3) + 16);
+        board_rectangle.y = (((board_row + 1) << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+      if ((tetramino_x) % 8 != 0x00 && collision == false && board->blocks[board_row + 1][board_col + 1] == 1) {
+        board_rectangle.x = (((board_col + 1) << 3) + 16);
+        board_rectangle.y = (((board_row + 1) << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+    } else if (y < 0) {
+      if (board->blocks[board_row][board_col] == 1) {
+        board_rectangle.x = ((board_col << 3) + 16);
+        board_rectangle.y = (((board_row) << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+      if ((tetramino_x) % 8 != 0x00 && collision == false && board->blocks[board_row][board_col + 1] == 1) {
+        board_rectangle.x = (((board_col + 1) << 3) + 16);
+        board_rectangle.y = (((board_row) << 3) + 16);
+        collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
+      }
+    }
+
+    if (collision == true) {
+      break;
+    }
   }
-
-  if (y > 0) {
-    if (board->blocks[board_row + 1][board_col] == 1) {
-      board_rectangle.x = ((board_col << 3) + 16);
-      board_rectangle.y = (((board_row + 1) << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
-    }
-    if (collision == false && board->blocks[board_row + 1][board_col + 1] == 1) {
-      board_rectangle.x = (((board_col + 1) << 3) + 16);
-      board_rectangle.y = (((board_row + 1) << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
-    }
-  } else if (y < 0) {
-    if (board->blocks[board_row][board_col] == 1) {
-      board_rectangle.x = ((board_col << 3) + 16);
-      board_rectangle.y = (((board_row) << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
-    }
-    if (collision == false && board->blocks[board_row][board_col + 1] == 1) {
-      board_rectangle.x = (((board_col + 1) << 3) + 16);
-      board_rectangle.y = (((board_row) << 3) + 16);
-      collision |= do_overlap(&tetramino_rectangle, &board_rectangle);
-    }
-  }
-
   return collision;
 }
 

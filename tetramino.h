@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "constants.h"
+
 typedef uint8_t tetramino_type_t;
 #define TETRAMINO_TYPE_Z (0x00)
 #define TETRAMINO_TYPE_O (0x01)
@@ -13,6 +15,9 @@ typedef uint8_t tetramino_type_t;
 #define TETRAMINO_TYPE_T (0x04)
 #define TETRAMINO_TYPE_J (0x05)
 #define TETRAMINO_TYPE_I (0x06)
+
+/* Format: [TYPE][SPRITE][X/Y] */
+extern const uint8_t tetramino_sprite_position_offset[7][4][2];
 
 typedef struct tetramino_t {
    uint8_t x;
@@ -33,9 +38,3 @@ void t_initialize_tetramino(tetramino_t * tetramino,
 /* @brief calculate next tetramino state
  * @param[in, out] target tetramino*/
 void t_update_tetramino(tetramino_t * tetramino);
-
-/* @brief calculate next tetramino state.
- * @param[in, out] target tetramino
- * @param[in] x horizontal offset
- * @param[in] y vertical offset */
-void t_move_tetramino_by(tetramino_t * tetramino, int8_t x, int8_t y);

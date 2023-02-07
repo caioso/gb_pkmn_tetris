@@ -199,29 +199,28 @@ void main(void)
         int8_t offset_y = 0;
 
         if (key & J_UP) {
-            if (cd_detect_collision(&general_board, &player_tetramino, 0, -1) == false) {
-                offset_y = -1;
-            }
+            if (cd_detect_collision(&general_board, &player_tetramino, 0, -1) == false)
+                player_tetramino.y = player_tetramino.y - 1;
         } else if (key & J_DOWN) {
-            if (cd_detect_collision(&general_board, &player_tetramino, 0, 1) == false) {
-                offset_y = 1;
-            }
+            if (cd_detect_collision(&general_board, &player_tetramino, 0, 1) == false)
+                player_tetramino.y = player_tetramino.y + 1;
         }
 
         if (key & J_RIGHT) {
-            if (cd_detect_collision(&general_board, &player_tetramino, 1, 0) == false) {
-                offset_x = 1;
-            }
+            if (cd_detect_collision(&general_board, &player_tetramino, 1, 0) == false)
+                player_tetramino.x = player_tetramino.x + 1;
         } else if (key & J_LEFT) {
-            if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false) {
-                offset_x = -1;
-            }
+            if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false)
+                player_tetramino.x = player_tetramino.x - 1;
         }
 
-        if (offset_x != 0 || offset_y != 0) {
-            t_move_tetramino_by(&player_tetramino, offset_x, offset_y);
-            t_update_tetramino(&player_tetramino);
+        if (key & J_START) {
+            t_initialize_tetramino(&player_tetramino,
+                           (player_tetramino.type + 1) % (7),
+                           MAIN_TETRAMINO_SPRITE_INDEX);
         }
+
+        t_update_tetramino(&player_tetramino);
 
 		// Done processing, yield CPU and wait for start of next frame
         wait_vbl_done();
