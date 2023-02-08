@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "tetramino.h"
+
 /* Common board constants */
 #define BOARD_WIDTH             (10)
 #define BOARD_HEIGHT            (18)
@@ -21,7 +23,7 @@ typedef uint8_t block_type_t;
 #define BLOCK_TYPE_GREEN   (0x06)
 #define BLOCK_TYPE_PURPLE  (0x07)
 
-typedef struct board_t {
+typedef struct § {
   uint8_t blocks[BOARD_HEIGHT][BOARD_WIDTH];
   uint8_t current_block_type;
   bool dirty;
@@ -41,3 +43,13 @@ void gbm_initialize_board(board_t * board,
  * @param[in] board reference to board object.
 */
 void gbm_update_board_if_needed(board_t * board);
+
+/* @brief writes tetramino pieces to board.
+ * @param[in, out] board reference to board object.
+ * @param[in] tetramino target tetramino to be written to the board. */
+void gbm_write_tetramino_to_board(board_t * board, tetramino_t * tetramino);
+
+/* @brief clear any full line in the board
+ * @TODO: Move this to RED mode file.
+ * @param[in, out] board reference to board object. */
+void remove_full_lines(board_t * board);

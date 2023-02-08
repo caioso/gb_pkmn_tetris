@@ -24,6 +24,18 @@ bool cd_detect_collision(board_t *board, tetramino_t * tetramino, int8_t x, int8
       .y = 0,
     };
 
+    if (x < 0 && tetramino_x <= 16) {
+      return true;
+    } else if (x > 0 && tetramino_x + BLOCK_SIDE_IN_PIXELS >= 16 + BOARD_WIDTH * BLOCK_SIDE_IN_PIXELS) {
+      return true;
+    }
+
+    if (y < 0 && tetramino_y <= 16) {
+      return true;
+    } else if (y > 0 && tetramino_y + BLOCK_SIDE_IN_PIXELS >= 16 + BOARD_HEIGHT * BLOCK_SIDE_IN_PIXELS) {
+      return true;
+    }
+
     if (x > 0) {
       if (board->blocks[board_row][board_col + 1] == 1) {
         board_rectangle.x = (((board_col + 1) << 3) + 16);

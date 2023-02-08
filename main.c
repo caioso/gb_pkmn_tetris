@@ -186,6 +186,7 @@ void main(void)
 
     // Loop forever
     uint8_t key = 0;
+    bool strat_pressed = false;
     while(1) {
         key = joypad();
 
@@ -214,10 +215,17 @@ void main(void)
                 player_tetramino.x = player_tetramino.x - 1;
         }
 
-        if (key & J_START) {
+        if (key & J_START && strat_pressed == false) {
+            strat_pressed = true;
+            gbm_write_tetramino_to_board(&general_board, &player_tetramino);
             t_initialize_tetramino(&player_tetramino,
-                           (player_tetramino.type + 1) % (7),
-                           MAIN_TETRAMINO_SPRITE_INDEX);
+                                   (player_tetramino.type + 1) % (7),
+                                   MAIN_TETRAMINO_SPRITE_INDEX);
+            remove_full_lines(&general_board);
+        }
+
+        if (!(key & J_START) && strat_pressed == true) {
+            strat_pressed = false;
         }
 
         t_update_tetramino(&player_tetramino);
