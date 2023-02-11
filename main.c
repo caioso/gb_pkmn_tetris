@@ -144,8 +144,9 @@ void main(void)
 
     /* Initialize tetramino */
     t_initialize_tetramino(&player_tetramino,
-                           TETRAMINO_TYPE_I,
+                           TETRAMINO_TYPE_Z,
                            MAIN_TETRAMINO_SPRITE_INDEX);
+    t_spawn_tetramino(&player_tetramino);
 
     /* Background setup */
     set_bkg_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
@@ -187,6 +188,8 @@ void main(void)
     // Loop forever
     uint8_t key = 0;
     bool strat_pressed = false;
+    bool A_pressed = false;
+    bool B_pressed = false;
     while(1) {
         key = joypad();
 
@@ -217,16 +220,35 @@ void main(void)
 
         if (key & J_START && strat_pressed == false) {
             strat_pressed = true;
-            gbm_write_tetramino_to_board(&general_board, &player_tetramino);
             t_initialize_tetramino(&player_tetramino,
                                    (player_tetramino.type + 1) % (7),
                                    MAIN_TETRAMINO_SPRITE_INDEX);
-            remove_full_lines(&general_board);
+            t_spawn_tetramino(&player_tetramino);
         }
 
         if (!(key & J_START) && strat_pressed == true) {
             strat_pressed = false;
         }
+
+        if (key & J_A && A_pressed == false) {
+            A_pressed = true;
+            t_rotate_tetramino(&player_tetramino);
+        }
+
+        if (!(key & J_A) && A_pressed == true) {
+            A_pressed = false;
+        }
+
+        if (key & J_B && B_pressed == false) {
+            B_pressed = true;
+            gbm_write_tetramino_to_board(&general_board, &player_tetramino);
+            remove_full_lines(&general_board);
+        }
+
+        if (!(key & J_B) && B_pressed == true) {
+            B_pressed = false;
+        }
+
 
         t_update_tetramino(&player_tetramino);
 

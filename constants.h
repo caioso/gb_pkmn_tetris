@@ -1,4 +1,15 @@
 #pragma once
 
 #define BLOCK_SIDE_IN_PIXELS (0x08)
+#define TEMPLATE_00 (0)
+#define TEMPLATE_1P (8)
+#define TEMPLATE_2P (16)
+#define TEMPLATE_3P (24)
+#define TEMPLATE_4P (32)
+#define TEMPLATE_1N (-8)
+#define TEMPLATE_2N (-16)
+#define TEMPLATE_3N (-24)
+#define TEMPLATE_4N (-32)
 #define MAIN_TETRAMINO_SPRITE_INDEX (0x00)
+#define PLAYFIELD_OFFSET_X (0x10)
+#define PLAYFIELD_OFFSET_Y (0x10)

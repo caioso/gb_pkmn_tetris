@@ -50,10 +50,10 @@ void gbm_write_tetramino_to_board(board_t * board, tetramino_t * tetramino) {
   uint8_t i = 0;
 
   for (i = 0; i < 4; i++) {
-    uint8_t tetramino_x = tetramino->x + tetramino_sprite_position_offset[tetramino->type][i][0];
-    uint8_t tetramino_y = tetramino->y + tetramino_sprite_position_offset[tetramino->type][i][1];
-    uint8_t board_col = (tetramino_x - 16) >> 3;
-    uint8_t board_row = (tetramino_y - 16) >> 3;
+    uint8_t tetramino_x = tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][0];
+    uint8_t tetramino_y = tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][1];
+    uint8_t board_col = (tetramino_x - PLAYFIELD_OFFSET_X) >> 3;
+    uint8_t board_row = (tetramino_y - PLAYFIELD_OFFSET_Y) >> 3;
     board->blocks[board_row][board_col] = 1;
   }
   board->dirty = true;
