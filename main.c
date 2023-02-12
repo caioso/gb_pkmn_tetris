@@ -185,9 +185,9 @@ void main(void)
     general_board.blocks[7][6] = BLOCK_TYPE_BLUE;
     general_board.dirty = true;
 
-    // Loop forever
     uint8_t key = 0;
     bool strat_pressed = false;
+    bool select_pressed = false;
     bool A_pressed = false;
     bool B_pressed = false;
     while(1) {
@@ -217,7 +217,6 @@ void main(void)
             if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false)
                 player_tetramino.x = player_tetramino.x - 1;
         }
-
         if (key & J_START && strat_pressed == false) {
             strat_pressed = true;
             t_initialize_tetramino(&player_tetramino,
@@ -232,7 +231,8 @@ void main(void)
 
         if (key & J_A && A_pressed == false) {
             A_pressed = true;
-            t_rotate_tetramino(&player_tetramino);
+            t_try_to_rotate_tetramino(
+                &player_tetramino, &general_board, ROTATION_CLOCKWISE);
         }
 
         if (!(key & J_A) && A_pressed == true) {
@@ -241,11 +241,21 @@ void main(void)
 
         if (key & J_B && B_pressed == false) {
             B_pressed = true;
+            t_try_to_rotate_tetramino(
+                &player_tetramino, &general_board, ROTATION_COUNTER_CLOCKWISE);
+        }
+
+        if (!(key & J_B) && B_pressed == true) {
+            B_pressed = false;
+        }
+
+        if (key & J_SELECT && select_pressed == false) {
+            select_pressed = true;
             gbm_write_tetramino_to_board(&general_board, &player_tetramino);
             remove_full_lines(&general_board);
         }
 
-        if (!(key & J_B) && B_pressed == true) {
+        if (!(key & J_SELECT) && select_pressed == true) {
             B_pressed = false;
         }
 

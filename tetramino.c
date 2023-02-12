@@ -101,6 +101,7 @@ const uint8_t tetramino_spawn_position[7][2] = {
 
 void initialize_tetraminos_sprites(tetramino_t * tetramino);
 void set_sprites_position_from_type(tetramino_t * tetramino);
+void update_rotation(tetramino_t * tetramino, rotation_direction_t direction);
 
 void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t type,
@@ -125,8 +126,9 @@ void t_spawn_tetramino(tetramino_t * tetramino) {
   set_sprites_position_from_type(tetramino);
 }
 
-void t_rotate_tetramino(tetramino_t * tetramino) {
-  tetramino->rotation = (tetramino->rotation + 1) % ROTATION_TYPE_T_MAX;
+void t_try_to_rotate_tetramino(tetramino_t * tetramino, board_t * board, rotation_direction_t direction) {
+  (void) board;
+  update_rotation(tetramino, direction);
   set_sprites_position_from_type(tetramino);
 }
 
@@ -151,5 +153,17 @@ void set_sprites_position_from_type(tetramino_t * tetramino) {
     move_sprite(tetramino->first_sprite + i,
                 tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][0],
                 tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][1]);
+  }
+}
+
+void update_rotation(tetramino_t * tetramino, rotation_direction_t direction) {
+  if (direction == ROTATION_CLOCKWISE) {
+    tetramino->rotation = (tetramino->rotation + 1) % ROTATION_TYPE_T_MAX;
+  } else if (direction == ROTATION_COUNTER_CLOCKWISE) {
+    if (tetramino->rotation == ROTATION_TYPE_T_0) {
+      tetramino->rotation = ROTATION_TYPE_T_3;
+    } else {
+      tetramino->rotation = (tetramino->rotation - 1);
+    }
   }
 }

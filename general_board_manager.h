@@ -5,29 +5,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "tetramino.h"
-
-/* Common board constants */
-#define BOARD_WIDTH             (10)
-#define BOARD_HEIGHT            (18)
-#define BOARD_HORIZONTAL_OFFSET (1u)
-
-/* Allowed block types (optimized to fit in 8 bits)*/
-typedef uint8_t block_type_t;
-#define BLOCK_TYPE_EMPTY   (0x00)
-#define BLOCK_TYPE_RED     (0x01)
-#define BLOCK_TYPE_BLUE    (0x02)
-#define BLOCK_TYPE_CYAN    (0x03)
-#define BLOCK_TYPE_ORANGE  (0x04)
-#define BLOCK_TYPE_YELLOW  (0x05)
-#define BLOCK_TYPE_GREEN   (0x06)
-#define BLOCK_TYPE_PURPLE  (0x07)
-
-typedef struct § {
-  uint8_t blocks[BOARD_HEIGHT][BOARD_WIDTH];
-  uint8_t current_block_type;
-  bool dirty;
-} board_t;
+#include "constants.h"
+#include "data_tables.h"
+#include "types.h"
 
 /* Public Functions*/
 /* @brief initialize board with empty blocks
