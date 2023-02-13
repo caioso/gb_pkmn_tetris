@@ -99,9 +99,49 @@ const uint8_t tetramino_spawn_position[7][2] = {
   {3, 0},
 };
 
+/* Format: [TYPE][ROTATION_TRANSITION][TEST][X/Y] */
+const int8_t rotation_test_offset[1][8][5][2] = {
+  /* 0 -> 1 */
+  {
+  {
+    {0, 0}, {-1, 0}, {-1, -1}, {0, 2}, {-1, 2}
+  },
+  /* 0 -> 1 */
+  {
+    {0, 0}, {1, 0}, {-1, 1}, {0, -2}, {1, -2}
+  },
+  /* 1 -> 2 */
+  {
+    {0, 0}, {1, 0}, {1, 1}, {0, -2}, {1, -2}
+  },
+  /* 2 -> 1 */
+  {
+    {0, 0}, {1, 0}, {1, -1}, {0, 2}, {-1, 2}
+  },
+  /* 2 -> 3 */
+  {
+    {0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}
+  },
+  /* 3 -> 2 */
+  {
+    {0, 0}, {-1, 0}, {-1, 1}, {0, -2}, {-1, -2}
+  },
+  /* 3 -> 0 */
+  {
+    {0, 0}, {-1, 0}, {-1, 1}, {0, -2}, {-1, -2}
+  },
+  /* 0 -> 3 */
+  {
+    {0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}
+  },
+  }
+};
+
 void initialize_tetraminos_sprites(tetramino_t * tetramino);
 void set_sprites_position_from_type(tetramino_t * tetramino);
-void update_rotation(tetramino_t * tetramino, rotation_direction_t direction);
+uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t next);
+rotation_type_t get_next_update_rotation(tetramino_t * tetramino, rotation_direction_t direction);
+bool test_rotation(tetramino_t * tetramino, board_t * board, rotation_direction_t direction);
 
 void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t type,
@@ -127,9 +167,11 @@ void t_spawn_tetramino(tetramino_t * tetramino) {
 }
 
 void t_try_to_rotate_tetramino(tetramino_t * tetramino, board_t * board, rotation_direction_t direction) {
-  (void) board;
-  update_rotation(tetramino, direction);
-  set_sprites_position_from_type(tetramino);
+  bool is_rotation_allowed = test_rotation(tetramino, board, direction);
+  if (is_rotation_allowed == true) {
+    tetramino->rotation = get_next_update_rotation(tetramino, direction);
+    set_sprites_position_from_type(tetramino);
+  }
 }
 
 /* private functions */
@@ -156,14 +198,66 @@ void set_sprites_position_from_type(tetramino_t * tetramino) {
   }
 }
 
-void update_rotation(tetramino_t * tetramino, rotation_direction_t direction) {
+rotation_type_t get_next_update_rotation(tetramino_t * tetramino, rotation_direction_t direction) {
+  rotation_type_t rotation = ROTATION_TYPE_T_0;
   if (direction == ROTATION_CLOCKWISE) {
-    tetramino->rotation = (tetramino->rotation + 1) % ROTATION_TYPE_T_MAX;
+    rotation = (tetramino->rotation + 1) % ROTATION_TYPE_T_MAX;
   } else if (direction == ROTATION_COUNTER_CLOCKWISE) {
     if (tetramino->rotation == ROTATION_TYPE_T_0) {
-      tetramino->rotation = ROTATION_TYPE_T_3;
+      rotation = ROTATION_TYPE_T_3;
     } else {
-      tetramino->rotation = (tetramino->rotation - 1);
+      rotation = (tetramino->rotation - 1);
     }
+  }
+
+  return rotation;
+}
+
+bool test_rotation(tetramino_t * tetramino, board_t * board, rotation_direction_t direction) {
+  rotation_type_t next_rotation = get_next_update_rotation(tetramino, direction);
+  uint8_t transition_index = get_rotation_transition_index(tetramino->rotation, next_rotation);
+  uint8_t test = 0;
+  uint8_t sprite = 0;
+
+  for (test = 0; test < 5; test++) {
+    bool test_passed = true;
+    for (sprite = 0; sprite < 4; sprite++) {
+      int8_t col = (tetramino->x + tetramino_sprite_position_offset[tetramino->type][next_rotation][sprite][0] - PLAYFIELD_OFFSET_X) >> 3;
+      int8_t row = (tetramino->y + tetramino_sprite_position_offset[tetramino->type][next_rotation][sprite][1] - PLAYFIELD_OFFSET_Y) >> 3;
+
+      col += rotation_test_offset[0][transition_index][test][0];
+      row += rotation_test_offset[0][transition_index][test][1];
+
+      if (col < 0 || row < 0 || col >= BOARD_WIDTH || row >= BOARD_HEIGHT || board->blocks[row][col] == 1) {
+        test_passed = false;
+        break;
+      }
+    }
+
+    if (test_passed == true) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t next) {
+  if (current == ROTATION_TYPE_T_0 && next == ROTATION_TYPE_T_1) {
+    return 0;
+  } else if (current == ROTATION_TYPE_T_1 && next == ROTATION_TYPE_T_0) {
+    return 1;
+  } else if (current == ROTATION_TYPE_T_1 && next == ROTATION_TYPE_T_2) {
+    return 2;
+  } else if (current == ROTATION_TYPE_T_2 && next == ROTATION_TYPE_T_1) {
+    return 3;
+  } else if (current == ROTATION_TYPE_T_2 && next == ROTATION_TYPE_T_3) {
+    return 4;
+  } else if (current == ROTATION_TYPE_T_3 && next == ROTATION_TYPE_T_2) {
+    return 5;
+  } else if (current == ROTATION_TYPE_T_3 && next == ROTATION_TYPE_T_0) {
+    return 6;
+  } else /* current == ROTATION_TYPE_T_0 && next == ROTATION_TYPE_T_3 */ {
+    return 7;
   }
 }

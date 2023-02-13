@@ -26,7 +26,7 @@ compile.bat: Makefile
 
 # Compile and link all source files in a single call to LCC
 $(BINS):	$(CSOURCES) $(ASMSOURCES)
-	$(LCC)  -Wl-yt0x1A -Wl-yo4 -Wl-ya4 -Wm-yC -o $@ $(CSOURCES) $(ASMSOURCES)
+	$(LCC)  -Wl-yt0x1A -Wl-yo4 -Wl-ya4 -Wm-yC -o $@ $(CSOURCES) $(ASMSOURCES) -Wall -Wextra
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.gbc *.ihx *.sym *.cdb *.adb *.asm *.sav

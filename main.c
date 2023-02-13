@@ -256,7 +256,7 @@ void main(void)
         }
 
         if (!(key & J_SELECT) && select_pressed == true) {
-            B_pressed = false;
+            select_pressed = false;
         }
 
 
