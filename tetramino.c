@@ -100,48 +100,83 @@ const uint8_t tetramino_spawn_position[7][2] = {
 };
 
 /* Format: [TYPE][ROTATION_TRANSITION][TEST][X/Y] */
-const int8_t rotation_test_offset[1][8][5][2] = {
-  /* 0 -> 1 */
+const int8_t rotation_test_offset[2][8][5][2] = {
+  /* J, L, T, S, Z */
   {
-  {
-    {0, 0}, {-1, 0}, {-1, -1}, {0, 2}, {-1, 2}
+    {
+      {0, 0}, {-1, 0}, {-1, -1}, {0, 2}, {-1, 2}
+    },
+    /* 0 -> 1 */
+    {
+      {0, 0}, {1, 0}, {-1, 1}, {0, -2}, {1, -2}
+    },
+    /* 1 -> 2 */
+    {
+      {0, 0}, {1, 0}, {1, 1}, {0, -2}, {1, -2}
+    },
+    /* 2 -> 1 */
+    {
+      {0, 0}, {1, 0}, {1, -1}, {0, 2}, {-1, 2}
+    },
+    /* 2 -> 3 */
+    {
+      {0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}
+    },
+    /* 3 -> 2 */
+    {
+      {0, 0}, {-1, 0}, {-1, 1}, {0, -2}, {-1, -2}
+    },
+    /* 3 -> 0 */
+    {
+      {0, 0}, {-1, 0}, {-1, 1}, {0, -2}, {-1, -2}
+    },
+    /* 0 -> 3 */
+    {
+      {0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}
+    },
   },
-  /* 0 -> 1 */
+  /* I */
   {
-    {0, 0}, {1, 0}, {-1, 1}, {0, -2}, {1, -2}
-  },
-  /* 1 -> 2 */
-  {
-    {0, 0}, {1, 0}, {1, 1}, {0, -2}, {1, -2}
-  },
-  /* 2 -> 1 */
-  {
-    {0, 0}, {1, 0}, {1, -1}, {0, 2}, {-1, 2}
-  },
-  /* 2 -> 3 */
-  {
-    {0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}
-  },
-  /* 3 -> 2 */
-  {
-    {0, 0}, {-1, 0}, {-1, 1}, {0, -2}, {-1, -2}
-  },
-  /* 3 -> 0 */
-  {
-    {0, 0}, {-1, 0}, {-1, 1}, {0, -2}, {-1, -2}
-  },
-  /* 0 -> 3 */
-  {
-    {0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}
-  },
+    {
+      {0, 0}, {-2, 0}, {1, 0}, {-2, 1}, {1, -2}
+    },
+    /* 0 -> 1 */
+    {
+      {0, 0}, {2, 0}, {-1, 0}, {2, -1}, {-1, 2}
+    },
+    /* 1 -> 2 */
+    {
+      {0, 0}, {-1, 0}, {2, 0}, {-1, -2}, {2, 1}
+    },
+    /* 2 -> 1 */
+    {
+      {0, 0}, {1, 0}, {-2, 0}, {1, 2}, {-2, -1}
+    },
+    /* 2 -> 3 */
+    {
+      {0, 0}, {2, 0}, {-1, 0}, {2, -1}, {-1, 2}
+    },
+    /* 3 -> 2 */
+    {
+      {0, 0}, {-2, 0}, {1, 0}, {-2, 1}, {1, -2}
+    },
+    /* 3 -> 0 */
+    {
+      {0, 0}, {1, 0}, {-2, 0}, {1, 2}, {-2, -1}
+    },
+    /* 0 -> 3 */
+    {
+      {0, 0}, {-1, 0}, {2, 0}, {-1, -2}, {2, 1}
+    },
   }
 };
 
 void initialize_tetraminos_sprites(tetramino_t * tetramino);
 void set_sprites_position_from_type(tetramino_t * tetramino);
 uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t next);
-rotation_type_t get_next_update_rotation(tetramino_t * tetramino, rotation_direction_t direction);
-bool test_rotation(tetramino_t * tetramino, board_t * board, rotation_direction_t direction);
+rotation_type_t get_next_rotation(tetramino_t * tetramino, rotation_direction_t direction);
+int8_t is_rotation_allowed(tetramino_t * tetramino, board_t * board, rotation_direction_t direction);
+uint8_t get_test_by_type(tetramino_t * tetramino);
 
 void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t type,
@@ -167,9 +202,16 @@ void t_spawn_tetramino(tetramino_t * tetramino) {
 }
 
 void t_try_to_rotate_tetramino(tetramino_t * tetramino, board_t * board, rotation_direction_t direction) {
-  bool is_rotation_allowed = test_rotation(tetramino, board, direction);
-  if (is_rotation_allowed == true) {
-    tetramino->rotation = get_next_update_rotation(tetramino, direction);
+  int8_t rotation_allowed = is_rotation_allowed(tetramino, board, direction);
+
+  if (rotation_allowed != -1) {
+    uint8_t test_type = get_test_by_type(tetramino);
+    uint8_t next_rotation = get_next_rotation(tetramino, direction);
+    uint8_t transition_index = get_rotation_transition_index(tetramino->rotation, next_rotation);
+
+    tetramino->rotation = next_rotation;
+    tetramino->x = ((tetramino->x >> 3) << 3) + (rotation_test_offset[test_type][transition_index][rotation_allowed][0] << 3);
+    tetramino->y = ((tetramino->y >> 3) << 3) + (rotation_test_offset[test_type][transition_index][rotation_allowed][1] << 3);
     set_sprites_position_from_type(tetramino);
   }
 }
@@ -198,7 +240,7 @@ void set_sprites_position_from_type(tetramino_t * tetramino) {
   }
 }
 
-rotation_type_t get_next_update_rotation(tetramino_t * tetramino, rotation_direction_t direction) {
+rotation_type_t get_next_rotation(tetramino_t * tetramino, rotation_direction_t direction) {
   rotation_type_t rotation = ROTATION_TYPE_T_0;
   if (direction == ROTATION_CLOCKWISE) {
     rotation = (tetramino->rotation + 1) % ROTATION_TYPE_T_MAX;
@@ -213,33 +255,37 @@ rotation_type_t get_next_update_rotation(tetramino_t * tetramino, rotation_direc
   return rotation;
 }
 
-bool test_rotation(tetramino_t * tetramino, board_t * board, rotation_direction_t direction) {
-  rotation_type_t next_rotation = get_next_update_rotation(tetramino, direction);
+int8_t is_rotation_allowed(tetramino_t * tetramino, board_t * board, rotation_direction_t direction) {
+  rotation_type_t next_rotation = get_next_rotation(tetramino, direction);
   uint8_t transition_index = get_rotation_transition_index(tetramino->rotation, next_rotation);
+  uint8_t test_type = get_test_by_type(tetramino);
   uint8_t test = 0;
   uint8_t sprite = 0;
+  int8_t result_index = -1;
 
   for (test = 0; test < 5; test++) {
-    bool test_passed = true;
+    bool passed = true;
     for (sprite = 0; sprite < 4; sprite++) {
       int8_t col = (tetramino->x + tetramino_sprite_position_offset[tetramino->type][next_rotation][sprite][0] - PLAYFIELD_OFFSET_X) >> 3;
       int8_t row = (tetramino->y + tetramino_sprite_position_offset[tetramino->type][next_rotation][sprite][1] - PLAYFIELD_OFFSET_Y) >> 3;
 
-      col += rotation_test_offset[0][transition_index][test][0];
-      row += rotation_test_offset[0][transition_index][test][1];
+      col += rotation_test_offset[test_type][transition_index][test][0];
+      row += rotation_test_offset[test_type][transition_index][test][1];
 
-      if (col < 0 || row < 0 || col >= BOARD_WIDTH || row >= BOARD_HEIGHT || board->blocks[row][col] == 1) {
-        test_passed = false;
+      if (col < 0 || row < 0 ||
+          col >= BOARD_WIDTH || row >= BOARD_HEIGHT ||
+          board->blocks[row][col] == 1) {
+        passed = false;
         break;
       }
     }
-
-    if (test_passed == true) {
-      return true;
+    if (passed == true) {
+      result_index = test;
+      break;
     }
   }
 
-  return false;
+  return result_index;
 }
 
 uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t next) {
@@ -259,5 +305,18 @@ uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t n
     return 6;
   } else /* current == ROTATION_TYPE_T_0 && next == ROTATION_TYPE_T_3 */ {
     return 7;
+  }
+}
+
+uint8_t get_test_by_type(tetramino_t * tetramino) {
+  if (tetramino->type == TETRAMINO_TYPE_Z ||
+      tetramino->type == TETRAMINO_TYPE_O ||
+      tetramino->type == TETRAMINO_TYPE_L ||
+      tetramino->type == TETRAMINO_TYPE_S ||
+      tetramino->type == TETRAMINO_TYPE_T ||
+      tetramino->type == TETRAMINO_TYPE_J) {
+    return 0;
+  } else {
+    return 1;
   }
 }
