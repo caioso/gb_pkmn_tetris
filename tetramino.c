@@ -1,4 +1,5 @@
 #include "tetramino.h"
+#include "collision_detector.h"
 
 /* Format: [TYPE][ROTATION][SPRITE][X/Y] */
 const uint8_t tetramino_sprite_position_offset[7][4][4][2] = {
@@ -172,6 +173,7 @@ const int8_t rotation_test_offset[2][8][5][2] = {
 };
 
 void initialize_tetraminos_sprites(tetramino_t * tetramino);
+void apply_gravity(tetramino_t * tetramino);
 void set_sprites_position_from_type(tetramino_t * tetramino);
 uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t next);
 rotation_type_t get_next_rotation(tetramino_t * tetramino, rotation_direction_t direction);
@@ -186,22 +188,31 @@ void t_initialize_tetramino(tetramino_t * tetramino,
   tetramino->type = type;
   tetramino->first_sprite = first_sprite;
   tetramino->rotation = ROTATION_TYPE_T_0;
+  tetramino->gravity = 0;
 
   initialize_tetraminos_sprites(tetramino);
   set_sprites_position_from_type(tetramino);
 }
 
-void t_update_tetramino(tetramino_t * tetramino) {
+void t_update_tetramino(tetramino_t * tetramino, board_t * board) {
+  if (cd_detect_collision(board, tetramino, 0, 1) == false) {
+    apply_gravity(tetramino);
+  }
   set_sprites_position_from_type(tetramino);
 }
 
 void t_spawn_tetramino(tetramino_t * tetramino) {
+  tetramino->gravity_counter = 0;
   tetramino->x = tetramino_spawn_position[tetramino->type][0] * BLOCK_SIDE_IN_PIXELS + PLAYFIELD_OFFSET_X;
   tetramino->y = tetramino_spawn_position[tetramino->type][1] * BLOCK_SIDE_IN_PIXELS + PLAYFIELD_OFFSET_Y;
   set_sprites_position_from_type(tetramino);
 }
 
 void t_try_to_rotate_tetramino(tetramino_t * tetramino, board_t * board, rotation_direction_t direction) {
+  if (tetramino->type == TETRAMINO_TYPE_O) {
+    return;
+  }
+
   int8_t rotation_allowed = is_rotation_allowed(tetramino, board, direction);
 
   if (rotation_allowed != -1) {
@@ -210,8 +221,8 @@ void t_try_to_rotate_tetramino(tetramino_t * tetramino, board_t * board, rotatio
     uint8_t transition_index = get_rotation_transition_index(tetramino->rotation, next_rotation);
 
     tetramino->rotation = next_rotation;
-    tetramino->x = ((tetramino->x >> 3) << 3) + (rotation_test_offset[test_type][transition_index][rotation_allowed][0] << 3);
-    tetramino->y = ((tetramino->y >> 3) << 3) + (rotation_test_offset[test_type][transition_index][rotation_allowed][1] << 3);
+    tetramino->x += (rotation_test_offset[test_type][transition_index][rotation_allowed][0] << 3);
+    tetramino->y += (rotation_test_offset[test_type][transition_index][rotation_allowed][1] << 3);
     set_sprites_position_from_type(tetramino);
   }
 }
@@ -319,4 +330,16 @@ uint8_t get_test_by_type(tetramino_t * tetramino) {
   } else {
     return 1;
   }
+}
+
+void apply_gravity(tetramino_t * tetramino) {
+  if (tetramino->gravity == 0) {
+    if (tetramino->gravity_counter == 48) {
+      tetramino->gravity_counter = 0;
+      tetramino->y += BLOCK_SIDE_IN_PIXELS;
+    } else {
+      tetramino->gravity_counter++;
+    }
+  }
+
 }

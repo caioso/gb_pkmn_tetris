@@ -190,33 +190,35 @@ void main(void)
     bool select_pressed = false;
     bool A_pressed = false;
     bool B_pressed = false;
+    bool right_pressed = false;
+    bool left_pressed = false;
     while(1) {
         key = joypad();
 
         /* Board update */
         gbm_update_board_if_needed(&general_board);
 
-        /* Tetramino ipdate */
-        t_update_tetramino(&player_tetramino);
-
         int8_t offset_x = 0;
         int8_t offset_y = 0;
 
-        if (key & J_UP) {
-            if (cd_detect_collision(&general_board, &player_tetramino, 0, -1) == false)
-                player_tetramino.y = player_tetramino.y - 1;
-        } else if (key & J_DOWN) {
-            if (cd_detect_collision(&general_board, &player_tetramino, 0, 1) == false)
-                player_tetramino.y = player_tetramino.y + 1;
+        if ((key & J_RIGHT) && right_pressed == false) {
+            right_pressed = true;
+            if (cd_detect_collision(&general_board, &player_tetramino, 1, 0) == false)
+                player_tetramino.x = player_tetramino.x + BLOCK_SIDE_IN_PIXELS;
+        } else if ((key & J_LEFT) && left_pressed == false) {
+            left_pressed = true;
+            if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false)
+                player_tetramino.x = player_tetramino.x - BLOCK_SIDE_IN_PIXELS;
         }
 
-        if (key & J_RIGHT) {
-            if (cd_detect_collision(&general_board, &player_tetramino, 1, 0) == false)
-                player_tetramino.x = player_tetramino.x + 1;
-        } else if (key & J_LEFT) {
-            if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false)
-                player_tetramino.x = player_tetramino.x - 1;
+        if (!(key & J_RIGHT) && right_pressed == true) {
+            right_pressed = false;
         }
+
+        if (!(key & J_LEFT) && left_pressed == true) {
+            left_pressed = false;
+        }
+
         if (key & J_START && strat_pressed == false) {
             strat_pressed = true;
             t_initialize_tetramino(&player_tetramino,
@@ -260,7 +262,7 @@ void main(void)
         }
 
 
-        t_update_tetramino(&player_tetramino);
+        t_update_tetramino(&player_tetramino, &general_board);
 
 		// Done processing, yield CPU and wait for start of next frame
         wait_vbl_done();

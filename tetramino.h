@@ -19,8 +19,11 @@ void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t first_sprite);
 
 /* @brief calculate next tetramino state
- * @param[in, out] target tetramino*/
-void t_update_tetramino(tetramino_t * tetramino);
+ * @param[in, out] target tetramino
+ * @param[in] board target board.
+ */
+void t_update_tetramino(tetramino_t * tetramino,
+                        board_t * board);
 
 /* @brief spawn tetramino at location described in the official rules.
  * @param[in, out] target tetramino */

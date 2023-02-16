@@ -53,4 +53,6 @@ typedef struct tetramino_t {
    tetramino_type_t type;
    uint8_t first_sprite;
    rotation_type_t rotation;
+   uint16_t gravity;
+   uint16_t gravity_counter;
 } tetramino_t;
