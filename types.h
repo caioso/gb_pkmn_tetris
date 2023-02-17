@@ -55,4 +55,6 @@ typedef struct tetramino_t {
    rotation_type_t rotation;
    uint16_t gravity;
    uint16_t gravity_counter;
+   uint8_t lock_delay;
+   uint8_t lock_counter;
 } tetramino_t;

@@ -101,7 +101,6 @@ bool cd_detect_collision(board_t *board, tetramino_t * tetramino, int8_t x, int8
 bool valueInRange(uint8_t value, uint8_t min, uint8_t max)
 { return (value >= min) && (value <= max); }
 
-
 bool do_overlap(point_t * r1, point_t * r2) {
   bool xOverlap = valueInRange(r1->x, r2->x, r2->x + BLOCK_SIDE_IN_PIXELS) ||
                   valueInRange(r2->x, r1->x, r1->x + BLOCK_SIDE_IN_PIXELS);

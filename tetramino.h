@@ -36,3 +36,8 @@ void t_spawn_tetramino(tetramino_t * tetramino);
 void t_try_to_rotate_tetramino(tetramino_t * tetramino,
                                board_t * board,
                                rotation_direction_t direction);
+
+/* @brief Attempts to reset lock delay
+ * @param[in, out] tetramino target tetramino.
+ */
+void t_try_to_reset_lock_delay(tetramino_t * tetramino);
