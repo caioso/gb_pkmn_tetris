@@ -126,6 +126,9 @@ const uint16_t bar_p[] =
 
 void main(void)
 {
+  /* Game settings */
+  uint16_t game_level = 0;
+
   /* Temporary: Initialize general board */
   board_t general_board;
 
@@ -223,15 +226,13 @@ void main(void)
     if (key & J_START && strat_pressed == false)
     {
       strat_pressed = true;
-      t_initialize_tetramino(&player_tetramino,
-                             (player_tetramino.type + 1) % (7),
-                             MAIN_TETRAMINO_SPRITE_INDEX);
-      t_spawn_tetramino(&player_tetramino);
+      game_level = 10;
     }
 
     if (!(key & J_START) && strat_pressed == true)
     {
       strat_pressed = false;
+      game_level = 0;
     }
 
     if (key & J_A && A_pressed == false)
@@ -262,7 +263,7 @@ void main(void)
     {
       select_pressed = true;
       gbm_write_tetramino_to_board(&general_board, &player_tetramino);
-      remove_full_lines(&general_board);
+      gmb_remove_full_lines(&general_board);
     }
 
     if (!(key & J_SELECT) && select_pressed == true)
@@ -270,7 +271,7 @@ void main(void)
       select_pressed = false;
     }
 
-    t_update_tetramino(&player_tetramino, &general_board);
+    t_update_tetramino(&player_tetramino, &general_board, game_level);
 
     // Done processing, yield CPU and wait for start of next frame
     wait_vbl_done();

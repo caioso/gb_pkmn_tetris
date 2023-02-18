@@ -3,4 +3,4 @@
 *.bat
 *.smg
 *.smc
-*.DS_StoreS
+**/*.DS_StoreS

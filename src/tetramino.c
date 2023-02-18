@@ -172,8 +172,26 @@ const int8_t rotation_test_offset[2][8][5][2] = {
   }
 };
 
+const uint8_t gravity_table[15] = {
+  48 /* level 00 */,
+  43 /* level 01 */,
+  38 /* level 02 */,
+  33 /* level 03 */,
+  28 /* level 04 */,
+  23 /* level 05 */,
+  18 /* level 06 */,
+  13 /* level 07 */,
+  8 /* level 08 */,
+  6 /* level 09 */,
+  5 /* level 10-12 */,
+  4 /* level 13-15 */,
+  3 /* level 16-19 */,
+  2 /* level 19-28 */,
+  1 /* level 29+ */
+};
+
 void initialize_tetraminos_sprites(tetramino_t * tetramino);
-void apply_gravity(tetramino_t * tetramino);
+void apply_gravity(tetramino_t * tetramino, uint16_t level);
 void set_sprites_position_from_type(tetramino_t * tetramino);
 void reset_lock_delay(tetramino_t * tetramino);
 bool can_reset_lock_delay(tetramino_t * tetramino);
@@ -181,6 +199,8 @@ uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t n
 rotation_type_t get_next_rotation(tetramino_t * tetramino, rotation_direction_t direction);
 int8_t is_rotation_allowed(tetramino_t * tetramino, board_t * board, rotation_direction_t direction);
 uint8_t get_test_by_type(tetramino_t * tetramino);
+void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level);
+uint8_t get_gravity_by_level(uint16_t level);
 
 void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t type,
@@ -198,28 +218,9 @@ void t_initialize_tetramino(tetramino_t * tetramino,
   set_sprites_position_from_type(tetramino);
 }
 
-void t_update_tetramino(tetramino_t * tetramino, board_t * board) {
-  if (cd_detect_collision(board, tetramino, 0, 1) == false) {
-
-    if (can_reset_lock_delay(tetramino)) {
-      reset_lock_delay(tetramino);
-    }
-
-    apply_gravity(tetramino);
-  } else {
-
-    tetramino->lock_delay++;
-
-    if (tetramino->lock_delay >= MAX_LOCK_DELAY) {
-      gbm_write_tetramino_to_board(board, tetramino);
-    }
-  }
-  if (tetramino->lock_delay == 0) {
-    set_bkg_tile_xy(0, 0, 1);
-  } else {
-    set_bkg_tile_xy(0, 0, 0);
-  }
-  set_sprites_position_from_type(tetramino);
+void t_update_tetramino(tetramino_t * tetramino, board_t * board, uint16_t level) {
+  /* Red Mode */
+  process_red_mode(tetramino, board, level);
 }
 
 void t_spawn_tetramino(tetramino_t * tetramino) {
@@ -273,7 +274,6 @@ void initialize_tetraminos_sprites(tetramino_t * tetramino) {
   set_sprite_prop(tetramino->first_sprite + 2, 6);
   set_sprite_tile(tetramino->first_sprite + 3, 1);
   set_sprite_prop(tetramino->first_sprite + 3, 6);
-
 }
 
 void set_sprites_position_from_type(tetramino_t * tetramino) {
@@ -366,16 +366,32 @@ uint8_t get_test_by_type(tetramino_t * tetramino) {
   }
 }
 
-void apply_gravity(tetramino_t * tetramino) {
-  if (tetramino->gravity == 0) {
-    if (tetramino->gravity_counter == 48) {
-      tetramino->gravity_counter = 0;
-      tetramino->y += BLOCK_SIDE_IN_PIXELS;
+uint8_t get_gravity_by_level(uint16_t level) {
+  uint8_t index = level;
+  if (level >= 10) {
+    if (level <= 12) {
+      return gravity_table[10];
+    } else if (level >= 13 && level <= 15) {
+      return gravity_table[11];
+    } else if (level >= 16 && level <= 18) {
+      return gravity_table[12];
+    } else if (level >= 19 && level <= 28) {
+      return gravity_table[13];
     } else {
-      tetramino->gravity_counter++;
+      return gravity_table[14];
     }
+  } else {
+    return gravity_table[index];
   }
+}
 
+void apply_gravity(tetramino_t * tetramino, uint16_t level) {
+  if (tetramino->gravity_counter >= get_gravity_by_level(level)) {
+    tetramino->gravity_counter = 0;
+    tetramino->y += BLOCK_SIDE_IN_PIXELS;
+  } else {
+    tetramino->gravity_counter++;
+  }
 }
 
 bool can_reset_lock_delay(tetramino_t * tetramino) {
@@ -385,4 +401,34 @@ bool can_reset_lock_delay(tetramino_t * tetramino) {
 void reset_lock_delay(tetramino_t * tetramino) {
   tetramino->lock_delay = 0;
   tetramino->lock_counter++;
+}
+
+void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level) {
+  /* If tetramino can drop down. */
+  if (cd_detect_collision(board, tetramino, 0, 1) == false) {
+
+    if (can_reset_lock_delay(tetramino)) {
+      reset_lock_delay(tetramino);
+    }
+    apply_gravity(tetramino, level);
+  } else {   /* If it collided with something. */
+
+    tetramino->lock_delay++;
+
+    if (tetramino->lock_delay >= MAX_LOCK_DELAY) {
+      gbm_write_tetramino_to_board(board, tetramino);
+      gmb_remove_full_lines(board);
+      t_initialize_tetramino(tetramino,
+                             (tetramino->type + 1) % (7),
+                             MAIN_TETRAMINO_SPRITE_INDEX);
+      t_spawn_tetramino(tetramino);
+    }
+  }
+  /* Debug */
+  if (tetramino->lock_delay == 0) {
+    set_bkg_tile_xy(0, 0, 1);
+  } else {
+    set_bkg_tile_xy(0, 0, 0);
+  }
+  set_sprites_position_from_type(tetramino);
 }

@@ -59,7 +59,7 @@ void gbm_write_tetramino_to_board(board_t * board, tetramino_t * tetramino) {
   board->dirty = true;
 }
 
-void remove_full_lines(board_t * board) {
+void gmb_remove_full_lines(board_t * board) {
   uint8_t col = 0;
   int8_t row = 0;
 

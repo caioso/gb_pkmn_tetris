@@ -32,4 +32,4 @@ void gbm_write_tetramino_to_board(board_t * board, tetramino_t * tetramino);
 /* @brief clear any full line in the board
  * @TODO: Move this to RED mode file.
  * @param[in, out] board reference to board object. */
-void remove_full_lines(board_t * board);
+void gmb_remove_full_lines(board_t * board);

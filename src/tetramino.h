@@ -21,9 +21,11 @@ void t_initialize_tetramino(tetramino_t * tetramino,
 /* @brief calculate next tetramino state
  * @param[in, out] target tetramino
  * @param[in] board target board.
+ * @param[in] level current game level.
  */
 void t_update_tetramino(tetramino_t * tetramino,
-                        board_t * board);
+                        board_t * board,
+                        uint16_t level);
 
 /* @brief spawn tetramino at location described in the official rules.
  * @param[in, out] target tetramino */
