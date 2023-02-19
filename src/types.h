@@ -57,4 +57,11 @@ typedef struct tetramino_t {
    uint16_t gravity_counter;
    uint8_t lock_delay;
    uint8_t lock_counter;
+   bool hard_drop_request;
 } tetramino_t;
+
+/* useful types */
+typedef struct point_2d_t {
+  uint8_t y;
+  uint8_t x;
+} point_2d_t;

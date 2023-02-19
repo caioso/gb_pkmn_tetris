@@ -190,6 +190,7 @@ void main(void)
   bool B_pressed = false;
   bool right_pressed = false;
   bool left_pressed = false;
+  bool up_pressed = false;
   while (1) {
     key = joypad();
 
@@ -223,7 +224,16 @@ void main(void)
       left_pressed = false;
     }
 
-    if (key & J_START && strat_pressed == false)
+    if ((key & J_UP) && up_pressed == false) {
+      up_pressed = true;
+      t_request_hard_drop(&player_tetramino);
+    }
+
+    if (!(key & J_UP) && up_pressed == true) {
+      up_pressed = false;
+    }
+
+    if ((key & J_START) && strat_pressed == false)
     {
       strat_pressed = true;
       game_level = 10;
@@ -235,7 +245,7 @@ void main(void)
       game_level = 0;
     }
 
-    if (key & J_A && A_pressed == false)
+    if ((key & J_A) && A_pressed == false)
     {
       A_pressed = true;
       t_try_to_rotate_tetramino(
@@ -247,7 +257,7 @@ void main(void)
       A_pressed = false;
     }
 
-    if (key & J_B && B_pressed == false)
+    if ((key & J_B) && B_pressed == false)
     {
       B_pressed = true;
       t_try_to_rotate_tetramino(
@@ -259,7 +269,7 @@ void main(void)
       B_pressed = false;
     }
 
-    if (key & J_SELECT && select_pressed == false)
+    if ((key & J_SELECT) && select_pressed == false)
     {
       select_pressed = true;
       gbm_write_tetramino_to_board(&general_board, &player_tetramino);

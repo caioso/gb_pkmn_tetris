@@ -201,6 +201,7 @@ int8_t is_rotation_allowed(tetramino_t * tetramino, board_t * board, rotation_di
 uint8_t get_test_by_type(tetramino_t * tetramino);
 void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level);
 uint8_t get_gravity_by_level(uint16_t level);
+uint8_t find_drop_position(tetramino_t * tetramino, board_t * board);
 
 void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t type,
@@ -213,6 +214,7 @@ void t_initialize_tetramino(tetramino_t * tetramino,
   tetramino->gravity = 0;
   tetramino->lock_delay = 0;
   tetramino->lock_counter = 0;
+  tetramino->hard_drop_request = false;
 
   initialize_tetraminos_sprites(tetramino);
   set_sprites_position_from_type(tetramino);
@@ -262,6 +264,10 @@ void t_try_to_reset_lock_delay(tetramino_t * tetramino) {
   }
 }
 
+void t_request_hard_drop(tetramino_t * tetramino) {
+  tetramino->hard_drop_request = true;
+}
+
 /* private functions */
 void initialize_tetraminos_sprites(tetramino_t * tetramino) {
   /* Initialize palette and sprite */
@@ -277,11 +283,11 @@ void initialize_tetraminos_sprites(tetramino_t * tetramino) {
 }
 
 void set_sprites_position_from_type(tetramino_t * tetramino) {
-  uint8_t i = 0;
-  for (i = 0; i < 4; i++) {
-    move_sprite(tetramino->first_sprite + i,
-                tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][0],
-                tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][1]);
+  uint8_t sprite = 0;
+  for (sprite = 0; sprite < 4; sprite++) {
+    move_sprite(tetramino->first_sprite + sprite,
+                tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][0],
+                tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][1]);
   }
 }
 
@@ -405,30 +411,65 @@ void reset_lock_delay(tetramino_t * tetramino) {
 
 void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level) {
   /* If tetramino can drop down. */
-  if (cd_detect_collision(board, tetramino, 0, 1) == false) {
-
-    if (can_reset_lock_delay(tetramino)) {
-      reset_lock_delay(tetramino);
-    }
-    apply_gravity(tetramino, level);
-  } else {   /* If it collided with something. */
-
-    tetramino->lock_delay++;
-
-    if (tetramino->lock_delay >= MAX_LOCK_DELAY) {
-      gbm_write_tetramino_to_board(board, tetramino);
-      gmb_remove_full_lines(board);
-      t_initialize_tetramino(tetramino,
-                             (tetramino->type + 1) % (7),
-                             MAIN_TETRAMINO_SPRITE_INDEX);
-      t_spawn_tetramino(tetramino);
-    }
-  }
-  /* Debug */
-  if (tetramino->lock_delay == 0) {
-    set_bkg_tile_xy(0, 0, 1);
+  if (tetramino->hard_drop_request == true) {
+      tetramino->hard_drop_request = false;
+      tetramino->y = find_drop_position(tetramino, board);
   } else {
-    set_bkg_tile_xy(0, 0, 0);
+    if (cd_detect_collision(board, tetramino, 0, 1) == false) {
+      /* No Hard-drop requested*/
+      if (tetramino->hard_drop_request == false) {
+        if (can_reset_lock_delay(tetramino)) {
+          reset_lock_delay(tetramino);
+        }
+        apply_gravity(tetramino, level);
+      }
+    } else {   /* If it collided with something. */
+      tetramino->lock_delay++;
+
+      if (tetramino->lock_delay >= MAX_LOCK_DELAY) {
+        gbm_write_tetramino_to_board(board, tetramino);
+        gmb_remove_full_lines(board);
+        t_initialize_tetramino(tetramino,
+                              (tetramino->type + 1) % (7),
+                              MAIN_TETRAMINO_SPRITE_INDEX);
+        t_spawn_tetramino(tetramino);
+      }
+    }
+    /* Debug */
+    if (tetramino->hard_drop_request == true) {
+      set_bkg_tile_xy(0, 0, 1);
+    } else {
+      set_bkg_tile_xy(0, 0, 0);
+    }
   }
+
+  /* Update sprites */
   set_sprites_position_from_type(tetramino);
+}
+
+uint8_t find_drop_position(tetramino_t * tetramino, board_t * board) {
+  volatile uint8_t sprite = 0;
+  volatile uint8_t found_row[4] = { BOARD_HEIGHT - 1, BOARD_HEIGHT - 1, BOARD_HEIGHT - 1, BOARD_HEIGHT - 1 };
+
+  for (sprite = 0; sprite < 4; sprite++) {
+    int8_t col = (tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][0] - PLAYFIELD_OFFSET_X) >> 3;
+    int8_t row = (tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][1] - PLAYFIELD_OFFSET_Y) >> 3;
+
+    for (uint8_t search_row = row + 1; search_row < BOARD_HEIGHT; search_row++) {
+      if (board->blocks[search_row][col] == 1) {
+        found_row[sprite] = search_row - 1;
+        break;
+      }
+    }
+  }
+
+  /* take any number lower than -1;*/
+  volatile uint8_t max_row = 1;
+  for (sprite = 0; sprite < 4; sprite++) {
+    if (max_row < found_row[sprite]) {
+      max_row = found_row[sprite];
+    }
+  }
+
+  return (max_row << 3) + PLAYFIELD_OFFSET_Y;
 }

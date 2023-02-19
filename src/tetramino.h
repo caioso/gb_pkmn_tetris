@@ -43,3 +43,8 @@ void t_try_to_rotate_tetramino(tetramino_t * tetramino,
  * @param[in, out] tetramino target tetramino.
  */
 void t_try_to_reset_lock_delay(tetramino_t * tetramino);
+
+/* @brief Posts hard drop request (current frame only)
+ * @param[in, out] tetramino target tetramino.
+ */
+void t_request_hard_drop(tetramino_t * tetramino);
