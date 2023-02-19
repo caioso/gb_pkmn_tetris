@@ -1,20 +1,20 @@
 #include "collision_detector.h"
 
 typedef struct point_t {
-    uint8_t x, y;
+    uint16_t x, y;
 } point_t;
 
 
 bool do_overlap(point_t * r1, point_t * r2);
 
-bool cd_detect_collision(board_t *board, tetramino_t * tetramino, int8_t x, int8_t y) {
+bool cd_detect_collision(board_t * board, tetramino_t * tetramino, int16_t x, int16_t y) {
   uint8_t i = 0;
   bool collision = false;
   for (i = 0; i < 4; i++) {
-    uint8_t tetramino_x = tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][0];
-    uint8_t tetramino_y = tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][1];
-    uint8_t board_col = (tetramino_x - PLAYFIELD_OFFSET_X + x) >> 3;
-    uint8_t board_row = (tetramino_y - PLAYFIELD_OFFSET_Y + y) >> 3;
+    uint16_t tetramino_x = tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][0];
+    uint16_t tetramino_y = tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][1];
+    uint16_t board_col = (tetramino_x - PLAYFIELD_OFFSET_X + x) >> 3;
+    uint16_t board_row = (tetramino_y - PLAYFIELD_OFFSET_Y + y) >> 3;
     point_t tetramino_rectangle = {
       .x = tetramino_x,
       .y = tetramino_y,
@@ -98,7 +98,7 @@ bool cd_detect_collision(board_t *board, tetramino_t * tetramino, int8_t x, int8
   return collision;
 }
 
-bool valueInRange(uint8_t value, uint8_t min, uint8_t max)
+bool valueInRange(uint16_t value, uint16_t min, uint16_t max)
 { return (value >= min) && (value <= max); }
 
 bool do_overlap(point_t * r1, point_t * r2) {

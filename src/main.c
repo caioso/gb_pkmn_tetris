@@ -191,6 +191,8 @@ void main(void)
   bool right_pressed = false;
   bool left_pressed = false;
   bool up_pressed = false;
+  bool shake_bkg = false;
+  uint8_t shake_counter = 0;
   while (1) {
     key = joypad();
 
@@ -227,6 +229,8 @@ void main(void)
     if ((key & J_UP) && up_pressed == false) {
       up_pressed = true;
       t_request_hard_drop(&player_tetramino);
+      shake_bkg = true;
+      shake_counter = 3;
     }
 
     if (!(key & J_UP) && up_pressed == true) {
@@ -272,8 +276,7 @@ void main(void)
     if ((key & J_SELECT) && select_pressed == false)
     {
       select_pressed = true;
-      gbm_write_tetramino_to_board(&general_board, &player_tetramino);
-      gmb_remove_full_lines(&general_board);
+      shake_counter = 3;
     }
 
     if (!(key & J_SELECT) && select_pressed == true)
@@ -282,6 +285,17 @@ void main(void)
     }
 
     t_update_tetramino(&player_tetramino, &general_board, game_level);
+
+    /* test only */
+    if (shake_bkg == true) {
+      if (shake_counter != 0) {
+        shake_counter--;
+        scroll_bkg(0 , -1);
+      } else {
+        shake_bkg = false;
+        scroll_bkg(0 , 3);
+      }
+    }
 
     // Done processing, yield CPU and wait for start of next frame
     wait_vbl_done();

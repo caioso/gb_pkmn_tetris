@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.asm": "fsharp",
+    "collision_detector.h": "c"
+  }
+}

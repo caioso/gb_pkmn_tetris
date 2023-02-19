@@ -435,12 +435,6 @@ void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level) 
         t_spawn_tetramino(tetramino);
       }
     }
-    /* Debug */
-    if (tetramino->hard_drop_request == true) {
-      set_bkg_tile_xy(0, 0, 1);
-    } else {
-      set_bkg_tile_xy(0, 0, 0);
-    }
   }
 
   /* Update sprites */
@@ -448,28 +442,9 @@ void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level) 
 }
 
 uint8_t find_drop_position(tetramino_t * tetramino, board_t * board) {
-  volatile uint8_t sprite = 0;
-  volatile uint8_t found_row[4] = { BOARD_HEIGHT - 1, BOARD_HEIGHT - 1, BOARD_HEIGHT - 1, BOARD_HEIGHT - 1 };
-
-  for (sprite = 0; sprite < 4; sprite++) {
-    int8_t col = (tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][0] - PLAYFIELD_OFFSET_X) >> 3;
-    int8_t row = (tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][1] - PLAYFIELD_OFFSET_Y) >> 3;
-
-    for (uint8_t search_row = row + 1; search_row < BOARD_HEIGHT; search_row++) {
-      if (board->blocks[search_row][col] == 1) {
-        found_row[sprite] = search_row - 1;
-        break;
-      }
-    }
+  while(cd_detect_collision(board, tetramino, 0, 1) == false) {
+    tetramino->y += BLOCK_SIDE_IN_PIXELS;
   }
 
-  /* take any number lower than -1;*/
-  volatile uint8_t max_row = 1;
-  for (sprite = 0; sprite < 4; sprite++) {
-    if (max_row < found_row[sprite]) {
-      max_row = found_row[sprite];
-    }
-  }
-
-  return (max_row << 3) + PLAYFIELD_OFFSET_Y;
+  return tetramino->y;
 }

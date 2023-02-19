@@ -12,4 +12,4 @@
  * @param[in] x offset x.
  * @param[in] y offset y.
  * @return collision detected (or not). */
-bool cd_detect_collision(board_t * board, tetramino_t * tetramino, int8_t x, int8_t y);
+bool cd_detect_collision(board_t * board, tetramino_t * tetramino, int16_t x, int16_t y);
