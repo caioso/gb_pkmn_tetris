@@ -15,3 +15,4 @@
 #define PLAYFIELD_OFFSET_Y (0x10)
 #define MAX_LOCK_COUNTER (15)
 #define MAX_LOCK_DELAY (30)
+#define OUT_OF_SCREEN (220)

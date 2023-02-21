@@ -50,6 +50,7 @@ typedef uint8_t rotation_direction_t;
 typedef struct tetramino_t {
    uint8_t x;
    uint8_t y;
+   uint8_t ghost_y;
    tetramino_type_t type;
    uint8_t first_sprite;
    rotation_type_t rotation;
@@ -58,6 +59,7 @@ typedef struct tetramino_t {
    uint8_t lock_delay;
    uint8_t lock_counter;
    bool hard_drop_request;
+   bool should_update_ghost;
 } tetramino_t;
 
 /* useful types */

@@ -206,6 +206,7 @@ void main(void)
       right_pressed = true;
       if (cd_detect_collision(&general_board, &player_tetramino, 1, 0) == false) {
         player_tetramino.x = player_tetramino.x + BLOCK_SIDE_IN_PIXELS;
+        player_tetramino.should_update_ghost = true;
         t_try_to_reset_lock_delay(&player_tetramino);
       }
     }
@@ -213,6 +214,7 @@ void main(void)
       left_pressed = true;
       if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false) {
         player_tetramino.x = player_tetramino.x - BLOCK_SIDE_IN_PIXELS;
+        player_tetramino.should_update_ghost = true;
         t_try_to_reset_lock_delay(&player_tetramino);
       }
     }

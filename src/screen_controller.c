@@ -21,6 +21,8 @@ void sc_update_screen_controller(tetramino_t * tetramino) {
     } else {
       scroll_bkg(0 , shake_offset[screen_shake_counter]);
       tetramino->y -= shake_offset[screen_shake_counter];
+      /* Red mode only */
+      tetramino->ghost_y -= shake_offset[screen_shake_counter];
     }
 
     if (screen_shake_counter == 4) {
