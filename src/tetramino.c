@@ -1,6 +1,227 @@
 #include "tetramino.h"
 #include "collision_detector.h"
 
+/* Format: [TYPE][ROTATION][TEMPLATE_ROW][TEMPLATE_COL] */
+const uint8_t tetramino_sprite_position_template[7][4][4][4] = {
+  /* TETRAMINO_TYPE_Z */
+  {
+    /* ROTATION 0 */
+    {
+      {1, 1, 0, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 1 */
+    {
+      {0, 0, 1, 0},
+      {0, 1, 1, 0},
+      {0, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 2 */
+    {
+      {0, 0, 0, 0},
+      {1, 1, 0, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 3 */
+    {
+      {0, 1, 0, 0},
+      {1, 1, 0, 0},
+      {1, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+  },
+  /* TETRAMINO_TYPE_O */
+  {
+    /* ROTATION 0 */
+    {
+      {0, 1, 1, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 1 */
+    {
+      {0, 1, 1, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 2 */
+    {
+      {0, 1, 1, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 3 */
+    {
+      {0, 1, 1, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+  },
+  /* TETRAMINO_TYPE_L */
+  {
+    /* ROTATION 0 */
+    {
+      {0, 0, 1, 0},
+      {1, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 1 */
+    {
+      {0, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 2 */
+    {
+      {0, 0, 0, 0},
+      {1, 1, 1, 0},
+      {1, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 3 */
+    {
+      {1, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+  },
+  /* TETRAMINO_TYPE_S */
+  {
+    /* ROTATION 0 */
+    {
+      {0, 1, 1, 0},
+      {1, 1, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 1 */
+    {
+      {0, 1, 0, 0},
+      {0, 1, 1, 0},
+      {0, 0, 1, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 2 */
+    {
+      {0, 0, 0, 0},
+      {0, 1, 1, 0},
+      {1, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 3 */
+    {
+      {1, 0, 0, 0},
+      {1, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+  },
+  /* TETRAMINO_TYPE_T */
+  {
+    /* ROTATION 0 */
+    {
+      {0, 1, 0, 0},
+      {1, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 1 */
+    {
+      {0, 1, 0, 0},
+      {0, 1, 1, 0},
+      {0, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 2 */
+    {
+      {0, 0, 0, 0},
+      {1, 1, 1, 0},
+      {0, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 3 */
+    {
+      {0, 1, 0, 0},
+      {1, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+  },
+/* TETRAMINO_TYPE_J */
+  {
+    /* ROTATION 0 */
+    {
+      {1, 0, 0, 0},
+      {1, 1, 1, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 1 */
+    {
+      {0, 1, 1, 0},
+      {0, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 2 */
+    {
+      {0, 0, 0, 0},
+      {1, 1, 1, 0},
+      {0, 0, 1, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 3 */
+    {
+      {0, 1, 0, 0},
+      {0, 1, 0, 0},
+      {1, 1, 0, 0},
+      {0, 0, 0, 0}
+    },
+  },
+/* TETRAMINO_TYPE_I */
+  {
+    /* ROTATION 0 */
+    {
+      {0, 0, 0, 0},
+      {1, 1, 1, 1},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 1 */
+    {
+      {0, 0, 1, 0},
+      {0, 0, 1, 0},
+      {0, 0, 1, 0},
+      {0, 0, 1, 0}
+    },
+    /* ROTATION 2 */
+    {
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {1, 1, 1, 1},
+      {0, 0, 0, 0}
+    },
+    /* ROTATION 3 */
+    {
+      {0, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 1, 0, 0},
+      {0, 1, 0, 0}
+    },
+  }
+};
+
 /* Format: [TYPE][ROTATION][SPRITE][X/Y] */
 const uint8_t tetramino_sprite_position_offset[7][4][4][2] = {
     /* TETRAMINO_TYPE_Z */
@@ -300,19 +521,35 @@ void initialize_tetraminos_sprites(tetramino_t * tetramino) {
 
 void set_real_sprites_position_from_type(tetramino_t * tetramino) {
   uint8_t sprite = 0;
-  for (sprite = 0; sprite < 4; sprite++) {
-    move_sprite(tetramino->first_sprite + sprite,
-                tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][0],
-                tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][1]);
+  for (uint8_t i = 0; i < 4; i++) {
+    for (uint8_t j = 0; j < 4; j++) {
+      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] == 1) {
+        move_sprite(tetramino->first_sprite + sprite,
+                tetramino->x + j * BLOCK_SIDE_IN_PIXELS,
+                tetramino->y + i * BLOCK_SIDE_IN_PIXELS);
+        sprite++;
+        if (sprite == 4) {
+          return;
+        }
+      }
+    }
   }
 }
 
 void set_ghost_sprites_position_from_type(tetramino_t * tetramino) {
   uint8_t sprite = 0;
-  for (sprite = 0; sprite < 4; sprite++) {
-    move_sprite(tetramino->first_sprite + sprite + 4,
-                tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][0],
-                tetramino->ghost_y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][sprite][1]);
+  for (uint8_t i = 0; i < 4; i++) {
+    for (uint8_t j = 0; j < 4; j++) {
+      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] == 1) {
+        move_sprite(tetramino->first_sprite + sprite + 4,
+                tetramino->x + j * BLOCK_SIDE_IN_PIXELS,
+                tetramino->ghost_y + i * BLOCK_SIDE_IN_PIXELS);
+        sprite++;
+        if (sprite == 4) {
+          return;
+        }
+      }
+    }
   }
 }
 
