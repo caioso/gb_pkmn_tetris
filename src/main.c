@@ -7,6 +7,7 @@
 #include "board_initialization_templates.h"
 #include "collision_detector.h"
 #include "constants.h"
+#include "delay_auto_shift_controller.h"
 #include "general_board_manager.h"
 #include "screen_controller.h"
 #include "tetramino.h"
@@ -192,6 +193,10 @@ void main(void)
   bool right_pressed = false;
   bool left_pressed = false;
   bool up_pressed = false;
+  das_t right_das;
+  das_t left_das;
+  das_reset_das(&right_das);
+  das_reset_das(&left_das);
 
   while (1) {
     key = joypad();
@@ -204,28 +209,32 @@ void main(void)
 
     if ((key & J_RIGHT) && right_pressed == false) {
       right_pressed = true;
-      if (cd_detect_collision(&general_board, &player_tetramino, 1, 0) == false) {
-        player_tetramino.x = player_tetramino.x + BLOCK_SIDE_IN_PIXELS;
-        player_tetramino.should_update_ghost = true;
-        t_try_to_reset_lock_delay(&player_tetramino);
+      t_move_tetramino_horizontally(&player_tetramino, &general_board, 1);
+    } else if ((key & J_RIGHT) && right_pressed == true) {
+      /* Process delay auto-shift (DAS) [RIGHT] */
+      das_update(&right_das);
+      if (right_das.movement_allowed) {
+        t_move_tetramino_horizontally(&player_tetramino, &general_board, 1);
       }
-    }
-    else if ((key & J_LEFT) && left_pressed == false) {
+    } else if ((key & J_LEFT) && left_pressed == false) {
       left_pressed = true;
-      if (cd_detect_collision(&general_board, &player_tetramino, -1, 0) == false) {
-        player_tetramino.x = player_tetramino.x - BLOCK_SIDE_IN_PIXELS;
-        player_tetramino.should_update_ghost = true;
-        t_try_to_reset_lock_delay(&player_tetramino);
+      t_move_tetramino_horizontally(&player_tetramino, &general_board, -1);
+    } else if ((key & J_LEFT) && left_pressed == true) {
+      /* Process delay auto-shift (DAS) [LEFT] */
+      das_update(&left_das);
+      if (left_das.movement_allowed) {
+        t_move_tetramino_horizontally(&player_tetramino, &general_board, -1);
       }
     }
 
     if (!(key & J_RIGHT) && right_pressed == true) {
       right_pressed = false;
+      das_reset_das(&right_das);
     }
 
-    if (!(key & J_LEFT) && left_pressed == true)
-    {
+    if (!(key & J_LEFT) && left_pressed == true) {
       left_pressed = false;
+      das_reset_das(&left_das);
     }
 
     if ((key & J_UP) && up_pressed == false) {

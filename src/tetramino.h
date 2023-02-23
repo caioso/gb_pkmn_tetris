@@ -48,3 +48,11 @@ void t_try_to_reset_lock_delay(tetramino_t * tetramino);
  * @param[in, out] tetramino target tetramino.
  */
 void t_request_hard_drop(tetramino_t * tetramino);
+
+/* @brief Moves tetramino to left or right
+  * @param[in, out] tetramino target tetramino.
+  * @param[in] board target board.
+  * @offset direction */
+void t_move_tetramino_horizontally(tetramino_t * tetramino,
+                                   board_t * board,
+                                   int8_t offset);

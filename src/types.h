@@ -67,3 +67,10 @@ typedef struct point_2d_t {
   uint8_t y;
   uint8_t x;
 } point_2d_t;
+
+/* DAS types */
+typedef struct das_t {
+  bool movement_allowed;
+  bool delay_auto_shift_enabled;
+  uint8_t delay_auto_shift_counter;
+} das_t;

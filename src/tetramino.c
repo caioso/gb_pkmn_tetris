@@ -721,3 +721,11 @@ uint8_t find_drop_position(tetramino_t * tetramino, board_t * board) {
   tetramino->y = old_y;
   return final_y;
 }
+
+void t_move_tetramino_horizontally(tetramino_t * tetramino, board_t * board, int8_t offset) {
+  if (cd_detect_collision(board, tetramino, offset, 0) == false) {
+    tetramino->x += BLOCK_SIDE_IN_PIXELS * offset;
+    tetramino->should_update_ghost = true;
+    t_try_to_reset_lock_delay(tetramino);
+  }
+}

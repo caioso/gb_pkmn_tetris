@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "*.asm": "fsharp",
-    "collision_detector.h": "c"
+    "collision_detector.h": "c",
+    "delay_auto_shift_controller.h": "c",
+    "stdbool.h": "c"
   }
 }
