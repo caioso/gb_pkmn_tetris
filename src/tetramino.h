@@ -21,8 +21,7 @@ void t_initialize_tetramino(tetramino_t * tetramino,
 /* @brief calculate next tetramino state
  * @param[in, out] target tetramino
  * @param[in] board target board.
- * @param[in] level current game level.
- */
+ * @param[in] level current game level. */
 void t_update_tetramino(tetramino_t * tetramino,
                         board_t * board,
                         uint16_t level);
@@ -40,13 +39,11 @@ void t_try_to_rotate_tetramino(tetramino_t * tetramino,
                                rotation_direction_t direction);
 
 /* @brief Attempts to reset lock delay
- * @param[in, out] tetramino target tetramino.
- */
+ * @param[in, out] tetramino target tetramino. */
 void t_try_to_reset_lock_delay(tetramino_t * tetramino);
 
 /* @brief Posts hard drop request (current frame only)
- * @param[in, out] tetramino target tetramino.
- */
+ * @param[in, out] tetramino target tetramino. */
 void t_request_hard_drop(tetramino_t * tetramino);
 
 /* @brief Moves tetramino to left or right
@@ -56,3 +53,8 @@ void t_request_hard_drop(tetramino_t * tetramino);
 void t_move_tetramino_horizontally(tetramino_t * tetramino,
                                    board_t * board,
                                    int8_t offset);
+
+/* @brief Toggle soft drop
+ * @param[in, out] tetramino target tetramino.
+ * @param[in] state sofr_drop_state. */
+void t_request_soft_drop(tetramino_t * tetramino, bool state);

@@ -438,6 +438,7 @@ void t_initialize_tetramino(tetramino_t * tetramino,
   tetramino->lock_counter = 0;
   tetramino->hard_drop_request = false;
   tetramino->should_update_ghost = false;
+  tetramino->soft_drop_enabled = false;
 
   initialize_tetraminos_sprites(tetramino);
   set_real_sprites_position_from_type(tetramino);
@@ -494,6 +495,16 @@ void t_try_to_reset_lock_delay(tetramino_t * tetramino) {
 
 void t_request_hard_drop(tetramino_t * tetramino) {
   tetramino->hard_drop_request = true;
+}
+
+void t_request_soft_drop(tetramino_t * tetramino, bool state) {
+  tetramino->soft_drop_enabled = state;
+
+  if (state == true) {
+    tetramino->gravity_counter = 0xFFFF;
+  } else {
+    tetramino->gravity_counter = 0x0000;
+  }
 }
 
 /* private functions */
@@ -654,7 +665,12 @@ uint8_t get_gravity_by_level(uint16_t level) {
 }
 
 void apply_gravity(tetramino_t * tetramino, uint16_t level) {
-  if (tetramino->gravity_counter >= get_gravity_by_level(level)) {
+  if (tetramino->soft_drop_enabled == false &&
+      tetramino->gravity_counter >= get_gravity_by_level(level)) {
+    tetramino->gravity_counter = 0;
+    tetramino->y += BLOCK_SIDE_IN_PIXELS;
+  } else if (tetramino->soft_drop_enabled == true &&
+             tetramino->gravity_counter >= get_gravity_by_level(10)) {
     tetramino->gravity_counter = 0;
     tetramino->y += BLOCK_SIDE_IN_PIXELS;
   } else {

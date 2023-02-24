@@ -193,6 +193,7 @@ void main(void)
   bool right_pressed = false;
   bool left_pressed = false;
   bool up_pressed = false;
+  bool down_pressed = false;
   das_t right_das;
   das_t left_das;
   das_reset_das(&right_das);
@@ -248,6 +249,17 @@ void main(void)
     if (!(key & J_UP) && up_pressed == true) {
       up_pressed = false;
     }
+
+    if ((key & J_DOWN) && down_pressed == false) {
+      down_pressed = true;
+      t_request_soft_drop(&player_tetramino, true);
+    }
+
+    if (!(key & J_DOWN) && down_pressed == true) {
+      down_pressed = false;
+      t_request_soft_drop(&player_tetramino, false);
+    }
+
 
     if ((key & J_START) && strat_pressed == false)
     {

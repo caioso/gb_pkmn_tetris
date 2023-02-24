@@ -60,6 +60,7 @@ typedef struct tetramino_t {
    uint8_t lock_counter;
    bool hard_drop_request;
    bool should_update_ghost;
+   bool soft_drop_enabled;
 } tetramino_t;
 
 /* useful types */
