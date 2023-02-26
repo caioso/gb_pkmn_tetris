@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/* extern dependencies */
+#include "../extern/include/hUGEDriver.h"
+
 /* game includes */
 #include "board_initialization_templates.h"
 #include "collision_detector.h"
@@ -93,6 +96,10 @@ extern const unsigned char bar_c[];
 
 /* End of BAR_C.H */
 
+/* Sound test */
+extern const hUGESong_t sample_song;
+
+
 // lots of comments
 unsigned char smile[] =
     {
@@ -128,6 +135,16 @@ const uint16_t bar_p[] =
 
 void main(void)
 {
+  NR52_REG = 0x80;
+  NR51_REG = 0xFF;
+  NR50_REG = 0x77;
+
+  /* Init audio */
+  __critical {
+  hUGE_init(&sample_song);
+        add_VBL(hUGE_dosound);
+  }
+
   /* Game settings */
   uint16_t game_level = 0;
 
@@ -200,6 +217,7 @@ void main(void)
   das_reset_das(&left_das);
 
   while (1) {
+
     key = joypad();
 
     /* Board update */
