@@ -4,3 +4,4 @@
 *.smg
 *.smc
 **/*.DS_Store
+*System Volume Information*
