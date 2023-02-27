@@ -5,6 +5,11 @@
     "delay_auto_shift_controller.h": "c",
     "stdbool.h": "c",
     "stddef.h": "c",
-    "hugedriver.h": "c"
+    "hugedriver.h": "c",
+    "piece_randomizer.h": "c",
+    "stdlib.h": "c",
+    "board_initialization_templates.h": "c",
+    "data_tables.h": "c",
+    "types.h": "c"
   }
 }

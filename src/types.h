@@ -35,6 +35,7 @@ typedef uint8_t tetramino_type_t;
 #define TETRAMINO_TYPE_T (0x04)
 #define TETRAMINO_TYPE_J (0x05)
 #define TETRAMINO_TYPE_I (0x06)
+#define TETRAMINO_TYPE_NULL (0x07)
 
 typedef uint8_t rotation_type_t;
 #define ROTATION_TYPE_T_0 (0x00)
@@ -75,3 +76,8 @@ typedef struct das_t {
   bool delay_auto_shift_enabled;
   uint8_t delay_auto_shift_counter;
 } das_t;
+
+typedef struct randomizer_t {
+  tetramino_type_t bag[7];
+  uint8_t length;
+} randomizer_t;

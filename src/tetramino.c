@@ -1,5 +1,6 @@
 #include "tetramino.h"
 #include "collision_detector.h"
+#include "piece_randomizer.h"
 
 /* Format: [TYPE][ROTATION][TEMPLATE_ROW][TEMPLATE_COL] */
 const uint8_t tetramino_sprite_position_template[7][4][4][4] = {
@@ -421,7 +422,7 @@ uint8_t get_rotation_transition_index(rotation_type_t current, rotation_type_t n
 rotation_type_t get_next_rotation(tetramino_t * tetramino, rotation_direction_t direction);
 int8_t is_rotation_allowed(tetramino_t * tetramino, board_t * board, rotation_direction_t direction);
 uint8_t get_test_by_type(tetramino_t * tetramino);
-void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level);
+void process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * randomizer, uint16_t level);
 uint8_t get_gravity_by_level(uint16_t level);
 uint8_t find_drop_position(tetramino_t * tetramino, board_t * board);
 
@@ -445,9 +446,9 @@ void t_initialize_tetramino(tetramino_t * tetramino,
   set_ghost_sprites_position_from_type(tetramino);
 }
 
-void t_update_tetramino(tetramino_t * tetramino, board_t * board, uint16_t level) {
+void t_update_tetramino(tetramino_t * tetramino, board_t * board, randomizer_t * randomizer, uint16_t level) {
   /* Red Mode */
-  process_red_mode(tetramino, board, level);
+  process_red_mode(tetramino, board, randomizer, level);
 }
 
 void t_spawn_tetramino(tetramino_t * tetramino) {
@@ -495,6 +496,8 @@ void t_try_to_reset_lock_delay(tetramino_t * tetramino) {
 
 void t_request_hard_drop(tetramino_t * tetramino) {
   tetramino->hard_drop_request = true;
+  tetramino->lock_counter = MAX_LOCK_COUNTER - 1;
+  tetramino->lock_delay = MAX_LOCK_DELAY;
 }
 
 void t_request_soft_drop(tetramino_t * tetramino, bool state) {
@@ -686,7 +689,7 @@ void reset_lock_delay(tetramino_t * tetramino) {
   tetramino->lock_delay = 0;
   tetramino->lock_counter++;
 }
-void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level) {
+void process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * randomizer, uint16_t level) {
   /* Update ghost if needed. */
   if (tetramino->should_update_ghost == true) {
     tetramino->ghost_y = find_drop_position(tetramino, board);
@@ -695,8 +698,8 @@ void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level) 
 
   /* If tetramino can drop down. */
   if (tetramino->hard_drop_request == true) {
-      tetramino->hard_drop_request = false;
-      tetramino->y = tetramino->ghost_y;
+    tetramino->hard_drop_request = false;
+    tetramino->y = tetramino->ghost_y;
   } else {
     if (cd_detect_collision(board, tetramino, 0, 1) == false) {
       /* No Hard-drop requested*/
@@ -713,7 +716,7 @@ void process_red_mode(tetramino_t * tetramino, board_t * board, uint16_t level) 
         gbm_write_tetramino_to_board(board, tetramino);
         gmb_remove_full_lines(board);
         t_initialize_tetramino(tetramino,
-                              (tetramino->type + 1) % (7),
+                              pr_get_next_piece(randomizer),
                               MAIN_TETRAMINO_SPRITE_INDEX);
         t_spawn_tetramino(tetramino);
       }

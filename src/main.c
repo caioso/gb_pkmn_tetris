@@ -2,6 +2,7 @@
 #include <gb/cgb.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <rand.h>
 
 /* extern dependencies */
 #include "../extern/include/hUGEDriver.h"
@@ -12,6 +13,7 @@
 #include "constants.h"
 #include "delay_auto_shift_controller.h"
 #include "general_board_manager.h"
+#include "piece_randomizer.h"
 #include "screen_controller.h"
 #include "tetramino.h"
 
@@ -133,6 +135,9 @@ const uint16_t bar_p[] =
         bar_cCGBPal6c0, bar_cCGBPal6c1, bar_cCGBPal6c2, bar_cCGBPal6c3,
         bar_cCGBPal7c0, bar_cCGBPal7c1, bar_cCGBPal7c2, bar_cCGBPal7c3};
 
+/* Move this to a central game control object */
+uint16_t random_seed = 0;
+
 void main(void)
 {
   NR52_REG = 0x80;
@@ -141,9 +146,19 @@ void main(void)
 
   /* Init audio */
   __critical {
-  hUGE_init(&sample_song);
-        add_VBL(hUGE_dosound);
+    hUGE_init(&sample_song);
+    add_VBL(hUGE_dosound);
   }
+
+  /* bag randomizer */
+  randomizer_t randomizer;
+  pr_initialize_piece_randomizer(&randomizer);
+
+  /* Initialize randomizer */
+  waitpad(J_START);
+  random_seed = LY_REG;
+  random_seed |= (uint16_t)DIV_REG << 8;
+  initrand(random_seed);
 
   /* Game settings */
   uint16_t game_level = 0;
@@ -161,7 +176,7 @@ void main(void)
 
   /* Initialize tetramino */
   t_initialize_tetramino(&player_tetramino,
-                         TETRAMINO_TYPE_Z,
+                         pr_get_next_piece(&randomizer),
                          MAIN_TETRAMINO_SPRITE_INDEX);
   t_spawn_tetramino(&player_tetramino);
 
@@ -326,7 +341,7 @@ void main(void)
     }
 
     /* Update functions */
-    t_update_tetramino(&player_tetramino, &general_board, game_level);
+    t_update_tetramino(&player_tetramino, &general_board, &randomizer, game_level);
     sc_update_screen_controller(&player_tetramino);
 
     // Done processing, yield CPU and wait for start of next frame
