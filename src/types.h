@@ -62,6 +62,9 @@ typedef struct tetramino_t {
    bool hard_drop_request;
    bool should_update_ghost;
    bool soft_drop_enabled;
+   tetramino_type_t held;
+   bool held_request;
+   bool held_swapped_allowed;
 } tetramino_t;
 
 /* useful types */

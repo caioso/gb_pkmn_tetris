@@ -333,6 +333,7 @@ void main(void)
     if ((key & J_SELECT) && select_pressed == false)
     {
       select_pressed = true;
+      t_request_hold(&player_tetramino, &randomizer);
     }
 
     if (!(key & J_SELECT) && select_pressed == true)

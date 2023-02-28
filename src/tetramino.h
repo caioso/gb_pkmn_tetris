@@ -18,6 +18,12 @@ void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t type,
                             uint8_t first_sprite);
 
+/* @brief set tetramino bacl to initial state
+ * @param[in, out] tetramino piece datastructure.
+ * @paramp[in] target tetramino_type. */
+void t_setup_tetramino(tetramino_t * tetramino,
+                       uint8_t type);
+
 /* @brief calculate next tetramino state
  * @param[in, out] target tetramino
  * @param[in] board target board.
@@ -60,3 +66,8 @@ void t_move_tetramino_horizontally(tetramino_t * tetramino,
  * @param[in, out] tetramino target tetramino.
  * @param[in] state sofr_drop_state. */
 void t_request_soft_drop(tetramino_t * tetramino, bool state);
+
+/* @brief request hold (if allowed).
+ * @param[in, out] tetramino target tetramino.
+ * @param[in] randomizer piece randomizer. */
+void t_request_hold(tetramino_t * tetramino, randomizer_t * randomizer);
