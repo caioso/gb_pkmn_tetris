@@ -8,8 +8,9 @@
 
 #include "types.h"
 
-/* @brief request screen shake. */
-void sc_shake_screen(void);
+/* @brief request screen shake.
+ * @param[in, out] tetramino piece datastructure. */
+void sc_shake_screen(tetramino_t * tetramino);
 
 /* @brief informs whether the screen is shaking
  * @return screen shake status */

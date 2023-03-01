@@ -29,7 +29,7 @@ void t_setup_tetramino(tetramino_t * tetramino,
  * @param[in] board target board.
  * @param[in] randomizer piece randomizer.
  * @param[in] level current game level. */
-void t_update_tetramino(tetramino_t * tetramino,
+bool t_update_tetramino(tetramino_t * tetramino,
                         board_t * board,
                         randomizer_t * randomizer,
                         uint16_t level);

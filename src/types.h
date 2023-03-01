@@ -65,6 +65,7 @@ typedef struct tetramino_t {
    tetramino_type_t held;
    bool held_request;
    bool held_swapped_allowed;
+   bool just_spawned;
 } tetramino_t;
 
 /* useful types */

@@ -230,8 +230,12 @@ void main(void)
   das_t left_das;
   das_reset_das(&right_das);
   das_reset_das(&left_das);
+  bool game_over = false;
 
   while (1) {
+    if (game_over == true) {
+      set_bkg_tile_xy(0, 0, 4);
+    }
 
     key = joypad();
 
@@ -275,7 +279,7 @@ void main(void)
       up_pressed = true;
       if (cd_detect_collision(&general_board, &player_tetramino, 0, 1) == false) {
         t_request_hard_drop(&player_tetramino);
-        sc_shake_screen();
+        sc_shake_screen(&player_tetramino);
       }
     }
 
@@ -342,7 +346,7 @@ void main(void)
     }
 
     /* Update functions */
-    t_update_tetramino(&player_tetramino, &general_board, &randomizer, game_level);
+    game_over = t_update_tetramino(&player_tetramino, &general_board, &randomizer, game_level);
     sc_update_screen_controller(&player_tetramino);
 
     // Done processing, yield CPU and wait for start of next frame
