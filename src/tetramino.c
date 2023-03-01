@@ -784,6 +784,9 @@ bool process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * r
     tetramino->hard_drop_request = false;
     tetramino->y = tetramino->ghost_y;
     tetramino->just_spawned = false;
+    /* Update sprites */
+    set_real_sprites_position_from_type(tetramino);
+    set_ghost_sprites_position_from_type(tetramino);
   } else {
     if (cd_detect_collision(board, tetramino, 0, 1) == false) {
       /* No Hard-drop requested*/
@@ -794,6 +797,9 @@ bool process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * r
         apply_gravity(tetramino, level);
       }
       tetramino->just_spawned = false;
+        /* Update sprites */
+      set_real_sprites_position_from_type(tetramino);
+      set_ghost_sprites_position_from_type(tetramino);
     } else {   /* If it collided with something. */
       if (tetramino->just_spawned == true && cd_detect_overlap(board, tetramino) == true) {
         /* Game Over Condition 1*/
@@ -813,10 +819,6 @@ bool process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * r
     }
   }
 
-
-  /* Update sprites */
-  set_real_sprites_position_from_type(tetramino);
-  set_ghost_sprites_position_from_type(tetramino);
   return game_over;
 }
 
