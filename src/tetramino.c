@@ -426,6 +426,7 @@ uint8_t get_test_by_type(tetramino_t * tetramino);
 void process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * randomizer, uint16_t level);
 uint8_t get_gravity_by_level(uint16_t level);
 uint8_t find_drop_position(tetramino_t * tetramino, board_t * board);
+void hide_ghost_sprites(tetramino_t * tetramino);
 
 void t_initialize_tetramino(tetramino_t * tetramino,
                             uint8_t type,
@@ -622,6 +623,12 @@ void set_ghost_sprites_position_from_type(tetramino_t * tetramino) {
   }
 }
 
+void hide_ghost_sprites(tetramino_t * tetramino) {
+  for (uint8_t sprite = 0; sprite < 4; sprite++) {
+    move_sprite(tetramino->first_sprite + sprite + 4, 0, 0);
+  }
+}
+
 void set_held_sprites_position_from_type(tetramino_t * tetramino) {
   uint8_t sprite = 0;
   for (uint8_t i = 0; i < 4; i++) {
@@ -790,6 +797,7 @@ void process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * r
         t_setup_tetramino(tetramino,
                           pr_get_next_piece(randomizer));
         t_spawn_tetramino(tetramino);
+        hide_ghost_sprites(tetramino);
       }
     }
   }
