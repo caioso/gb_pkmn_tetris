@@ -21,23 +21,23 @@ void gbm_update_board_if_needed(board_t * board) {
   uint8_t current_type = board->current_block_type;
 
   if (board->dirty == true) {
-    for (row = 0; row < BOARD_HEIGHT; row++) {
+    for (row = 4; row < BOARD_HEIGHT; row++) {
       for (col = 0; col < BOARD_WIDTH; col++) {
         /* Temporary: set tile and pallette depending on the type. */
 
         /* The palette indexes will change. */
         if (board->blocks[row][col] == 1) {
           VBK_REG = VBK_TILES;
-          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row, 1);
+          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row - 4, 1);
 
           VBK_REG = VBK_ATTRIBUTES;
-          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row, 6);
+          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row - 4, 6);
         } else  {
           VBK_REG = VBK_TILES;
-          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row, 0);
+          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row - 4, 0);
 
           VBK_REG = VBK_ATTRIBUTES;
-          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row, 0);
+          set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row - 4, 0);
         }
       }
     }
@@ -52,8 +52,8 @@ void gbm_write_tetramino_to_board(board_t * board, tetramino_t * tetramino) {
   for (i = 0; i < 4; i++) {
     uint8_t tetramino_x = tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][0];
     uint8_t tetramino_y = tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][1];
-    uint8_t board_col = (tetramino_x - PLAYFIELD_OFFSET_X) >> 3;
-    uint8_t board_row = (tetramino_y - PLAYFIELD_OFFSET_Y) >> 3;
+    uint8_t board_col = (tetramino_x) >> 3;
+    uint8_t board_row = ((tetramino_y) >> 3);
     board->blocks[board_row][board_col] = 1;
   }
   board->dirty = true;

@@ -35,8 +35,9 @@ bool t_update_tetramino(tetramino_t * tetramino,
                         uint16_t level);
 
 /* @brief spawn tetramino at location described in the official rules.
- * @param[in, out] target tetramino */
-void t_spawn_tetramino(tetramino_t * tetramino);
+ * @param[in, out] target tetramino
+ * @param[in] board target board. */
+void t_spawn_tetramino(tetramino_t * tetramino, board_t * board);
 
 /* @brief Attempt tetramino rotation based on standard rotation and wallkick tests.
  * @param[in, out] tetramino target tetramino.
@@ -69,5 +70,6 @@ void t_request_soft_drop(tetramino_t * tetramino, bool state);
 
 /* @brief request hold (if allowed).
  * @param[in, out] tetramino target tetramino.
+ * @param[in] board target board.
  * @param[in] randomizer piece randomizer. */
-void t_request_hold(tetramino_t * tetramino, randomizer_t * randomizer);
+void t_request_hold(tetramino_t * tetramino, board_t * board, randomizer_t * randomizer);

@@ -6,8 +6,8 @@ typedef struct point_t {
 
 bool cd_detect_collision(board_t * board, tetramino_t * tetramino, int16_t x, int16_t y) {
   int16_t i, j, k, l;
-  int16_t initial_x = ((tetramino->x - PLAYFIELD_OFFSET_X) >> 3);
-  int16_t initial_y = ((tetramino->y - PLAYFIELD_OFFSET_Y) >> 3);
+  int16_t initial_x = ((tetramino->x) >> 3);
+  int16_t initial_y = ((tetramino->y) >> 3);
 
   for (j = 0, k = 0; j < 4; j++, k++) {
     for (i = 0, l = 0; i <  4; i++, l++) {
@@ -30,8 +30,8 @@ bool cd_detect_collision(board_t * board, tetramino_t * tetramino, int16_t x, in
 
 bool cd_detect_overlap(board_t * board, tetramino_t * tetramino) {
   int16_t i, j, k, l;
-  int16_t initial_x = ((tetramino->x - PLAYFIELD_OFFSET_X) >> 3);
-  int16_t initial_y = ((tetramino->y - PLAYFIELD_OFFSET_Y) >> 3);
+  int16_t initial_x = ((tetramino->x) >> 3);
+  int16_t initial_y = ((tetramino->y) >> 3);
 
   for (j = 0, k = 0; j < 4; j++, k++) {
     for (i = 0, l = 0; i <  4; i++, l++) {

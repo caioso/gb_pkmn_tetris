@@ -178,7 +178,7 @@ void main(void)
   t_initialize_tetramino(&player_tetramino,
                          pr_get_next_piece(&randomizer),
                          MAIN_TETRAMINO_SPRITE_INDEX);
-  t_spawn_tetramino(&player_tetramino);
+  t_spawn_tetramino(&player_tetramino, &general_board);
 
   /* Background setup */
   set_bkg_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
@@ -235,6 +235,7 @@ void main(void)
   while (1) {
     if (game_over == true) {
       set_bkg_tile_xy(0, 0, 4);
+      continue;
     }
 
     key = joypad();
@@ -337,7 +338,7 @@ void main(void)
     if ((key & J_SELECT) && select_pressed == false)
     {
       select_pressed = true;
-      t_request_hold(&player_tetramino, &randomizer);
+      t_request_hold(&player_tetramino, &general_board, &randomizer);
     }
 
     if (!(key & J_SELECT) && select_pressed == true)

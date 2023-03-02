@@ -6,7 +6,7 @@
 /* Board-related types */
 /* Common board constants */
 #define BOARD_WIDTH             (10)
-#define BOARD_HEIGHT            (18)
+#define BOARD_HEIGHT            (22)
 #define BOARD_HORIZONTAL_OFFSET (1u)
 
 /* Allowed block types (optimized to fit in 8 bits)*/
@@ -49,8 +49,8 @@ typedef uint8_t rotation_direction_t;
 #define ROTATION_COUNTER_CLOCKWISE (0x01)
 
 typedef struct tetramino_t {
-   uint8_t x;
-   uint8_t y;
+   int16_t x;
+   int16_t y;
    uint8_t ghost_y;
    tetramino_type_t type;
    uint8_t first_sprite;
