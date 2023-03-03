@@ -231,6 +231,9 @@ void main(void)
   das_reset_das(&right_das);
   das_reset_das(&left_das);
   bool game_over = false;
+  bool rumble_requested = false;
+  uint8_t x_before_moving = 0;
+  bool das_rumble_requested = false;
 
   while (1) {
     if (game_over == true) {
@@ -248,31 +251,56 @@ void main(void)
 
     if ((key & J_RIGHT) && right_pressed == false) {
       right_pressed = true;
+      x_before_moving = player_tetramino.x;
       t_move_tetramino_horizontally(&player_tetramino, &general_board, 1);
+
+      if (x_before_moving == player_tetramino.x) {
+        sc_rumble_screen(&player_tetramino, SCREEN_RUMBLE_DIRECTION_RIGHT);
+      }
+
     } else if ((key & J_RIGHT) && right_pressed == true) {
       /* Process delay auto-shift (DAS) [RIGHT] */
       das_update(&right_das);
       if (right_das.movement_allowed) {
+        x_before_moving = player_tetramino.x;
         t_move_tetramino_horizontally(&player_tetramino, &general_board, 1);
+
+          if (das_rumble_requested == false && x_before_moving == player_tetramino.x) {
+          sc_rumble_screen(&player_tetramino, SCREEN_RUMBLE_DIRECTION_RIGHT);
+          das_rumble_requested = true;
+        }
       }
     } else if ((key & J_LEFT) && left_pressed == false) {
       left_pressed = true;
+      x_before_moving = player_tetramino.x;
       t_move_tetramino_horizontally(&player_tetramino, &general_board, -1);
+
+      if (x_before_moving == player_tetramino.x) {
+        sc_rumble_screen(&player_tetramino, SCREEN_RUMBLE_DIRECTION_LEFT);
+      }
     } else if ((key & J_LEFT) && left_pressed == true) {
       /* Process delay auto-shift (DAS) [LEFT] */
       das_update(&left_das);
       if (left_das.movement_allowed) {
+        x_before_moving = player_tetramino.x;
         t_move_tetramino_horizontally(&player_tetramino, &general_board, -1);
+
+          if (das_rumble_requested == false && x_before_moving == player_tetramino.x) {
+          sc_rumble_screen(&player_tetramino, SCREEN_RUMBLE_DIRECTION_LEFT);
+          das_rumble_requested = true;
+        }
       }
     }
 
     if (!(key & J_RIGHT) && right_pressed == true) {
       right_pressed = false;
+      das_rumble_requested = false;
       das_reset_das(&right_das);
     }
 
     if (!(key & J_LEFT) && left_pressed == true) {
       left_pressed = false;
+      das_rumble_requested = false;
       das_reset_das(&left_das);
     }
 

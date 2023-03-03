@@ -51,7 +51,11 @@ typedef uint8_t rotation_direction_t;
 typedef struct tetramino_t {
    int16_t x;
    int16_t y;
+   uint8_t x_offset;
+   uint8_t y_offset;
    uint8_t ghost_y;
+   uint8_t ghost_x_offset;
+   uint8_t ghost_y_offset;
    tetramino_type_t type;
    uint8_t first_sprite;
    rotation_type_t rotation;
@@ -85,3 +89,7 @@ typedef struct randomizer_t {
   tetramino_type_t bag[7];
   uint8_t length;
 } randomizer_t;
+
+typedef uint8_t screen_rumble_direction_t;
+#define SCREEN_RUMBLE_DIRECTION_RIGHT (0x00)
+#define SCREEN_RUMBLE_DIRECTION_LEFT (0x01)
