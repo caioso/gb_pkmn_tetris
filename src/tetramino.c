@@ -829,6 +829,10 @@ bool process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * r
                           pr_get_next_piece(randomizer));
         t_spawn_tetramino(tetramino, board);
       }
+
+        /* Update sprites */
+      set_real_sprites_position_from_type(tetramino);
+      set_ghost_sprites_position_from_type(tetramino);
     }
   }
 
