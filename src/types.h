@@ -93,3 +93,5 @@ typedef struct randomizer_t {
 typedef uint8_t screen_rumble_direction_t;
 #define SCREEN_RUMBLE_DIRECTION_RIGHT (0x00)
 #define SCREEN_RUMBLE_DIRECTION_LEFT (0x01)
+#define SCREEN_RUMBLE_DIRECTION_DOWN (0x02)
+#define SCREEN_RUMBLE_DIRECTION_UP (0x03)

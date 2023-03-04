@@ -147,7 +147,7 @@ void main(void)
   /* Init audio */
   __critical {
     hUGE_init(&sample_song);
-    add_VBL(hUGE_dosound);
+    //add_VBL(hUGE_dosound);
   }
 
   /* bag randomizer */
@@ -232,7 +232,8 @@ void main(void)
   das_reset_das(&left_das);
   bool game_over = false;
   bool rumble_requested = false;
-  uint8_t x_before_moving = 0;
+  int16_t x_before_moving = 0;
+  int16_t previous_frame_y = 0;
   bool das_rumble_requested = false;
 
   while (1) {
@@ -318,11 +319,26 @@ void main(void)
 
     if ((key & J_DOWN) && down_pressed == false) {
       down_pressed = true;
+
       t_request_soft_drop(&player_tetramino, true);
+      if (das_rumble_requested == false &&
+          player_tetramino.soft_drop_enabled == true &&
+          cd_detect_collision(&general_board, &player_tetramino, 0, 1) == true) {
+          sc_rumble_screen(&player_tetramino, SCREEN_RUMBLE_DIRECTION_DOWN);
+          das_rumble_requested = true;
+      }
+    } else if ((key & J_DOWN) && down_pressed == true) {
+      if (das_rumble_requested == false &&
+          player_tetramino.soft_drop_enabled == true &&
+          cd_detect_collision(&general_board, &player_tetramino, 0, 1) == true) {
+          sc_rumble_screen(&player_tetramino, SCREEN_RUMBLE_DIRECTION_DOWN);
+          das_rumble_requested = true;
+      }
     }
 
     if (!(key & J_DOWN) && down_pressed == true) {
       down_pressed = false;
+      das_rumble_requested = false;
       t_request_soft_drop(&player_tetramino, false);
     }
 

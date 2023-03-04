@@ -448,9 +448,9 @@ void t_initialize_tetramino(tetramino_t * tetramino,
   tetramino->held_swapped_allowed = true;
   tetramino->just_spawned = true;
   tetramino->ghost_x_offset = 0;
+  tetramino->ghost_y_offset = 0;
   tetramino->x_offset = 0;
   tetramino->y_offset = 0;
-  tetramino->ghost_y_offset = 0;
 
   initialize_tetraminos_sprites(tetramino);
 }
@@ -471,9 +471,9 @@ void t_setup_tetramino(tetramino_t * tetramino,
   tetramino->held_swapped_allowed = true;
   tetramino->just_spawned = true;
   tetramino->ghost_x_offset = 0;
+  tetramino->ghost_y_offset = 0;
   tetramino->x_offset = 0;
   tetramino->y_offset = 0;
-  tetramino->ghost_y_offset = 0;
 
   initialize_tetraminos_sprites(tetramino);
 }
@@ -490,14 +490,11 @@ void t_spawn_tetramino(tetramino_t * tetramino, board_t * board) {
   tetramino->x = tetramino_spawn_position[tetramino->type][0] * BLOCK_SIDE_IN_PIXELS;
   tetramino->y = tetramino_spawn_position[tetramino->type][1] * BLOCK_SIDE_IN_PIXELS + (4 * BLOCK_SIDE_IN_PIXELS);
 
-  if (cd_detect_overlap(board, tetramino) == true) {
-    tetramino->y -= BLOCK_SIDE_IN_PIXELS;
-  }
-  if (cd_detect_overlap(board, tetramino) == true) {
-    tetramino->y -= BLOCK_SIDE_IN_PIXELS;
-  }
-  if (cd_detect_overlap(board, tetramino) == true) {
-    tetramino->y -= BLOCK_SIDE_IN_PIXELS;
+  /* Try to move the tetramino at most 3 times up*/
+  for (uint8_t i = 0; i < 3; i++) {
+    if (cd_detect_overlap(board, tetramino) == true) {
+      tetramino->y -= BLOCK_SIDE_IN_PIXELS;
+    }
   }
 
   tetramino->ghost_y = tetramino->y;
@@ -639,7 +636,7 @@ void set_ghost_sprites_position_from_type(tetramino_t * tetramino) {
     for (uint8_t j = 0; j < 4; j++) {
       if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] == 1) {
         move_sprite(tetramino->first_sprite + sprite + 4,
-                tetramino->x + j * BLOCK_SIDE_IN_PIXELS + PLAYFIELD_OFFSET_X + tetramino->ghost_x_offset + tetramino->ghost_x_offset,
+                tetramino->x + j * BLOCK_SIDE_IN_PIXELS + PLAYFIELD_OFFSET_X + tetramino->ghost_x_offset,
                 tetramino->ghost_y + i * BLOCK_SIDE_IN_PIXELS - (4 * BLOCK_SIDE_IN_PIXELS) + PLAYFIELD_OFFSET_Y + tetramino->ghost_y_offset);
         sprite++;
         if (sprite == 4) {
