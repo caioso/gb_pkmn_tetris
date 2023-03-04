@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pokemon Tetris Tile Converter</title>
+<script src="canvas_controller.js"></script>
+
+<style>
+  html, body {
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    background-color: #efefef;
+  }
+  canvas {
+    padding: 0;
+    margin: 0;
+  }
+</style>
+</head>
+
+<body onload="init()">
+  <div id="png_holder" style="position:absolute; padding: 0; top: 120px; left: 20px; width : calc(50% - 50px); height: calc(100% - 160px); background-color: red;">
+    <canvas id="png"/>
+    </div>
+  </div>
+  <div id="tiles_holder" style="position:absolute; padding: 0; top: 120px; left: calc(50% + 10px); width : calc(50% - 50px); height: calc(100% - 160px); background-color: red;">
+    <canvas id="tiles"/>
+    </div>
+  </div>
+  <div style="overflow:hidden; position:absolute; padding: 0px; top: 20px; left: 20px; width : calc(50% - 50px); height: 80px; background-color: white;">
+    <br/>
+    <input type="file" id="image_file"></input>
+    <div style="position:absolute; visibility:hidden;">
+      <img id="hidden_image" style="border:1px;"/>
+    </div>
+  </div>
+
+  <div id="palettes_holder" style="overflow:hidden; position:absolute; padding: 0px; top: 20px; left: calc(50% + 10px); width : calc(50% - 50px); height: 80px; background-color: red;">
+    <canvas id="palettes"/>
+    </div>
+  </div>
+</body>
+
+</html>
