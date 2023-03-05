@@ -17,6 +17,9 @@
 #include "screen_controller.h"
 #include "tetramino.h"
 
+/* Game Assets */
+#include "minos.h"
+
 /* Bank of tiles. */
 #define bar_cBank 0
 
@@ -101,26 +104,6 @@ extern const unsigned char bar_c[];
 /* Sound test */
 extern const hUGESong_t sample_song;
 
-
-// lots of comments
-unsigned char smile[] =
-    {
-        0x0F, 0x0F, 0x30, 0x30, 0x40, 0x40, 0x40, 0x40,
-        0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84,
-        0x84, 0x84, 0x84, 0x84, 0x80, 0x80, 0x80, 0x80,
-        0x44, 0x44, 0x43, 0x43, 0x30, 0x30, 0x0F, 0x0F,
-        0xF0, 0xF0, 0x0C, 0x0C, 0x02, 0x02, 0x02, 0x02,
-        0x21, 0x21, 0x21, 0x21, 0x21, 0x21, 0x21, 0x21,
-        0x21, 0x21, 0x21, 0x21, 0x01, 0x01, 0x01, 0x01,
-        0x22, 0x22, 0xC2, 0xC2, 0x0C, 0x0C, 0xF0, 0xF0,
-        0x0F, 0x0F, 0x30, 0x30, 0x40, 0x40, 0x40, 0x40,
-        0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84,
-        0x84, 0x84, 0x84, 0x84, 0x80, 0x80, 0x80, 0x80,
-        0x44, 0x44, 0x43, 0x43, 0x30, 0x30, 0x0F, 0x0F,
-        0xF0, 0xF0, 0x0C, 0x0C, 0x02, 0x02, 0x02, 0x02,
-        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0xF9, 0xF9,
-        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-        0x22, 0x22, 0xC2, 0xC2, 0x0C, 0x0C, 0xF0, 0xF0};
 unsigned char background_data[] = {
     0x00, 0x01, 0x00, 0x01};
 
@@ -161,7 +144,7 @@ void main(void)
   initrand(random_seed);
 
   /* Game settings */
-  uint16_t game_level = 0;
+  uint16_t game_level = 1;
 
   /* Temporary: Initialize general board */
   board_t general_board;
@@ -191,7 +174,7 @@ void main(void)
   set_bkg_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
 
   /* Background tiles code transfer */
-  set_bkg_data(1, 8, smile);
+  set_bkg_data(1, 9, minos);
 
   /* Sprite setup */
   set_sprite_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
@@ -204,18 +187,11 @@ void main(void)
   set_sprite_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
 
   /* Sprite tiles code transfer */
-  set_sprite_data(1, 8, smile);
+  set_sprite_data(1, 9, minos);
 
   /* show background */
   SHOW_BKG;
   SHOW_SPRITES;
-
-  /* test: set some tiles to see the change */
-  general_board.blocks[5][5] = BLOCK_TYPE_BLUE;
-  general_board.blocks[6][5] = BLOCK_TYPE_BLUE;
-  general_board.blocks[7][5] = BLOCK_TYPE_BLUE;
-  general_board.blocks[7][6] = BLOCK_TYPE_BLUE;
-  general_board.dirty = true;
 
   uint8_t key = 0;
   bool strat_pressed = false;
@@ -235,6 +211,9 @@ void main(void)
   int16_t x_before_moving = 0;
   int16_t previous_frame_y = 0;
   bool das_rumble_requested = false;
+
+  set_bkg_tile_xy(0, 0, 8);
+  set_bkg_tile_xy(0, 1, 9);
 
   while (1) {
     if (game_over == true) {
@@ -346,13 +325,11 @@ void main(void)
     if ((key & J_START) && strat_pressed == false)
     {
       strat_pressed = true;
-      game_level = 10;
     }
 
     if (!(key & J_START) && strat_pressed == true)
     {
       strat_pressed = false;
-      game_level = 0;
     }
 
     if ((key & J_A) && A_pressed == false)

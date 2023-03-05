@@ -20,7 +20,7 @@ function init() {
   tiles_canvas.width  = document.getElementById('tiles_holder').clientWidth;
   tiles_canvas.height = document.getElementById('tiles_holder').clientHeight;
   tiles_ctx = tiles_canvas.getContext('2d');
-  tiles_ctx.fillStyle='black';
+  tiles_ctx.fillStyle='yellow';
   tiles_ctx.scale(2,2);
   tiles_ctx.imageSmoothingEnabled = false;
   tiles_ctx.fillRect(0,0,tiles_canvas.width,tiles_canvas.height);
@@ -51,7 +51,7 @@ function showImage(fileReader) {
   var img = document.getElementById("hidden_image");
   img.onload = () => {
     getImageData(img);
-    showTiles(img, 2);
+    showTiles(img, 1);
     showPalettes(img);
   }
   img.src = fileReader.result;

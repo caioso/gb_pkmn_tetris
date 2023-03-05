@@ -3,10 +3,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/* useful types */
+typedef struct point_2d_t {
+  uint8_t y;
+  uint8_t x;
+} point_2d_t;
+
 /* Board-related types */
 /* Common board constants */
 #define BOARD_WIDTH             (10)
-#define BOARD_HEIGHT            (22)
+#define BOARD_HEIGHT            (20)
 #define BOARD_HORIZONTAL_OFFSET (1u)
 
 /* Allowed block types (optimized to fit in 8 bits)*/
@@ -22,6 +28,8 @@ typedef uint8_t block_type_t;
 
 typedef struct board_t {
   uint8_t blocks[BOARD_HEIGHT][BOARD_WIDTH];
+  point_2d_t shine_position;
+  bool shine_requested;
   uint8_t current_block_type;
   bool dirty;
 } board_t;
@@ -71,12 +79,6 @@ typedef struct tetramino_t {
    bool held_swapped_allowed;
    bool just_spawned;
 } tetramino_t;
-
-/* useful types */
-typedef struct point_2d_t {
-  uint8_t y;
-  uint8_t x;
-} point_2d_t;
 
 /* DAS types */
 typedef struct das_t {

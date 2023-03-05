@@ -13,6 +13,7 @@ void gbm_initialize_board(board_t * board,
   }
   board->current_block_type = current_block_type;
   board->dirty = false;
+  board->shine_requested = false;
 }
 
 void gbm_update_board_if_needed(board_t * board) {
@@ -26,7 +27,7 @@ void gbm_update_board_if_needed(board_t * board) {
         /* Temporary: set tile and pallette depending on the type. */
 
         /* The palette indexes will change. */
-        if (board->blocks[row][col] == 1) {
+        if (board->blocks[row][col] > 0) {
           VBK_REG = VBK_TILES;
           set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row - 4, 1);
 
@@ -43,6 +44,18 @@ void gbm_update_board_if_needed(board_t * board) {
     }
 
     board->dirty = false;
+  }
+
+  if (board->shine_requested == true) {
+    VBK_REG = VBK_TILES;
+    for (col = board->shine_position.x;
+        (col < board->shine_position.x + 2);
+        col++) {
+      for (row = 0; row < board->shine_position.y; row++) {
+        set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row, 8);
+      }
+    }
+  board->shine_requested = false;
   }
 }
 
@@ -90,4 +103,11 @@ void gmb_remove_full_lines(board_t * board) {
       row++;
     }
   }
+}
+
+void gmb_shine_background(board_t * board, uint8_t x, uint8_t y) {
+  board->shine_position.x = x;
+  board->shine_position.y = 16;
+  board->shine_requested = true;
+
 }

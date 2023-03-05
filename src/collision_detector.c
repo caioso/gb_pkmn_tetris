@@ -13,13 +13,13 @@ bool cd_detect_collision(board_t * board, tetramino_t * tetramino, int16_t x, in
     for (i = 0, l = 0; i <  4; i++, l++) {
       uint8_t current_board_value =
         tetramino_sprite_position_template[tetramino->type][tetramino->rotation][k][l];
-      if (current_board_value == 1 &&
+      if (current_board_value > 0 &&
         ((i + initial_x + x < 0) || (i + initial_x + x >= BOARD_WIDTH) ||
          (j + initial_y + y < 0) || (j + initial_y + y >= BOARD_HEIGHT))) {
         return true;
       }
 
-      if (board->blocks[j + initial_y + y][i + initial_x + x] == 1 && current_board_value == 1) {
+      if (board->blocks[j + initial_y + y][i + initial_x + x] > 0 && current_board_value > 0) {
         return true;
       }
     }
@@ -37,7 +37,7 @@ bool cd_detect_overlap(board_t * board, tetramino_t * tetramino) {
     for (i = 0, l = 0; i <  4; i++, l++) {
       uint8_t current_board_value =
         tetramino_sprite_position_template[tetramino->type][tetramino->rotation][k][l];
-      if (board->blocks[j + initial_y][i + initial_x] == 1 && current_board_value == 1) {
+      if (board->blocks[j + initial_y][i + initial_x] > 0 && current_board_value > 0) {
         return true;
       }
     }

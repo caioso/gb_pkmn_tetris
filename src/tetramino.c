@@ -611,7 +611,7 @@ void set_real_sprites_position_from_type(tetramino_t * tetramino) {
   uint8_t sprite = 0;
   for (uint8_t i = 0; i < 4; i++) {
     for (uint8_t j = 0; j < 4; j++) {
-      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] == 1) {
+      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] > 0) {
         if (tetramino->y >= 0) {
           move_sprite(tetramino->first_sprite + sprite,
                   tetramino->x + j * BLOCK_SIDE_IN_PIXELS + PLAYFIELD_OFFSET_X + tetramino->x_offset,
@@ -634,7 +634,7 @@ void set_ghost_sprites_position_from_type(tetramino_t * tetramino) {
   uint8_t sprite = 0;
   for (uint8_t i = 0; i < 4; i++) {
     for (uint8_t j = 0; j < 4; j++) {
-      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] == 1) {
+      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] > 0) {
         move_sprite(tetramino->first_sprite + sprite + 4,
                 tetramino->x + j * BLOCK_SIDE_IN_PIXELS + PLAYFIELD_OFFSET_X + tetramino->ghost_x_offset,
                 tetramino->ghost_y + i * BLOCK_SIDE_IN_PIXELS - (4 * BLOCK_SIDE_IN_PIXELS) + PLAYFIELD_OFFSET_Y + tetramino->ghost_y_offset);
@@ -657,7 +657,7 @@ void set_held_sprites_position_from_type(tetramino_t * tetramino) {
   uint8_t sprite = 0;
   for (uint8_t i = 0; i < 4; i++) {
     for (uint8_t j = 0; j < 4; j++) {
-      if (tetramino_sprite_position_template[tetramino->held][0][i][j] == 1) {
+      if (tetramino_sprite_position_template[tetramino->held][0][i][j] > 0) {
         move_sprite(tetramino->first_sprite + sprite + 8,
                 PLAYFIELD_OFFSET_X + 12 * BLOCK_SIDE_IN_PIXELS + j * BLOCK_SIDE_IN_PIXELS,
                 PLAYFIELD_OFFSET_Y + BLOCK_SIDE_IN_PIXELS + i * BLOCK_SIDE_IN_PIXELS);
@@ -704,7 +704,7 @@ int8_t is_rotation_allowed(tetramino_t * tetramino, board_t * board, rotation_di
 
       if (col < 0 || row < 0 ||
           col >= BOARD_WIDTH || row >= BOARD_HEIGHT ||
-          board->blocks[row][col] == 1) {
+          board->blocks[row][col] > 0) {
         passed = false;
         break;
       }
@@ -806,6 +806,10 @@ bool process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * r
     tetramino->hard_drop_request = false;
     tetramino->y = tetramino->ghost_y;
     tetramino->just_spawned = false;
+
+    /* Request board background shine */
+    gmb_shine_background(board, tetramino->x >> 3, tetramino->y >> 3);
+
     /* Update sprites */
     set_real_sprites_position_from_type(tetramino);
     set_ghost_sprites_position_from_type(tetramino);
@@ -848,7 +852,7 @@ bool detect_locked_out_of_bounds(tetramino_t * tetramino) {
   bool locked_out_of_bouds = false;
   for (uint8_t i = 0; i < 4; i++) {
     for (uint8_t j = 0; j < 4; j++) {
-      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] == 1) {
+      if (tetramino_sprite_position_template[tetramino->type][tetramino->rotation][i][j] > 0) {
           if (tetramino->y + i * BLOCK_SIDE_IN_PIXELS -
                         (4 * BLOCK_SIDE_IN_PIXELS) + PLAYFIELD_OFFSET_Y < PLAYFIELD_OFFSET_Y) {
             locked_out_of_bouds = true;
