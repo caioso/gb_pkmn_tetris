@@ -48,11 +48,12 @@ void gbm_update_board_if_needed(board_t * board) {
 
   if (board->shine_requested == true) {
     VBK_REG = VBK_TILES;
-    for (col = board->shine_position.x;
-        (col < board->shine_position.x + 2);
-        col++) {
-      for (row = 0; row < board->shine_position.y; row++) {
-        set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row, 8);
+    for (uint8_t shine = 0; shine < 4; shine++) {
+      for (row = 0; row < board->shine_position[shine].y; row++) {
+        if (get_bkg_tile_xy(board->shine_position[shine].x + BOARD_HORIZONTAL_OFFSET, row) == 8) {
+          break;
+        }
+        set_bkg_tile_xy(board->shine_position[shine].x + BOARD_HORIZONTAL_OFFSET, row, 8);
       }
     }
   board->shine_requested = false;
@@ -105,9 +106,14 @@ void gmb_remove_full_lines(board_t * board) {
   }
 }
 
-void gmb_shine_background(board_t * board, uint8_t x, uint8_t y) {
-  board->shine_position.x = x;
-  board->shine_position.y = 16;
+void gmb_shine_background(board_t * board, tetramino_t * tetramino) {
+  for (uint8_t i = 0; i < 4; i++) {
+    uint8_t tetramino_x = tetramino->x + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][0];
+    uint8_t tetramino_y = tetramino->y + tetramino_sprite_position_offset[tetramino->type][tetramino->rotation][i][1];
+    uint8_t board_col = (tetramino_x) >> 3;
+    uint8_t board_row = ((tetramino_y) >> 3);
+    board->shine_position[i].x = board_col;
+    board->shine_position[i].y = board_row - 3;
+  }
   board->shine_requested = true;
-
 }

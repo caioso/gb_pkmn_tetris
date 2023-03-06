@@ -28,7 +28,7 @@ typedef uint8_t block_type_t;
 
 typedef struct board_t {
   uint8_t blocks[BOARD_HEIGHT][BOARD_WIDTH];
-  point_2d_t shine_position;
+  point_2d_t shine_position[4];
   bool shine_requested;
   uint8_t current_block_type;
   bool dirty;

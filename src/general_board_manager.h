@@ -34,4 +34,7 @@ void gbm_write_tetramino_to_board(board_t * board, tetramino_t * tetramino);
  * @param[in, out] board reference to board object. */
 void gmb_remove_full_lines(board_t * board);
 
-void gmb_shine_background(board_t * board, uint8_t x, uint8_t y);
+/* @brief Shine backround based on position
+ * @param[in, out] board reference to board object.
+ * @param[in] tetramino target tetramino to be written to the board. */
+void gmb_shine_background(board_t * board, tetramino_t * tetramino);

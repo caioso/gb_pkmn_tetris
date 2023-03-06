@@ -808,7 +808,7 @@ bool process_red_mode(tetramino_t * tetramino, board_t * board, randomizer_t * r
     tetramino->just_spawned = false;
 
     /* Request board background shine */
-    gmb_shine_background(board, tetramino->x >> 3, tetramino->y >> 3);
+    gmb_shine_background(board, tetramino);
 
     /* Update sprites */
     set_real_sprites_position_from_type(tetramino);
