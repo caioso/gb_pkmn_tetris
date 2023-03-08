@@ -9,6 +9,7 @@
 
 /* game includes */
 #include "board_initialization_templates.h"
+#include "catch_controller.h"
 #include "collision_detector.h"
 #include "constants.h"
 #include "delay_auto_shift_controller.h"
@@ -163,6 +164,12 @@ void main(void)
                          MAIN_TETRAMINO_SPRITE_INDEX);
   t_spawn_tetramino(&player_tetramino, &general_board);
 
+  /* Catch Controller */
+  catch_controller_t catch_controller;
+
+  /* Initialize Catch Controller */
+  cc_catch_controller_init(&catch_controller);
+
   /* Background setup */
   set_bkg_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
   set_bkg_palette(BKGF_CGB_PAL6, 1, &bar_p[4]);
@@ -174,7 +181,7 @@ void main(void)
   set_bkg_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
 
   /* Background tiles code transfer */
-  set_bkg_data(1, 9, minos);
+  set_bkg_data(1, 20, minos);
 
   /* Sprite setup */
   set_sprite_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
@@ -187,7 +194,7 @@ void main(void)
   set_sprite_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
 
   /* Sprite tiles code transfer */
-  set_sprite_data(1, 9, minos);
+  set_sprite_data(1, 20, minos);
 
   /* show background */
   SHOW_BKG;
@@ -324,6 +331,7 @@ void main(void)
 
     if ((key & J_START) && strat_pressed == false)
     {
+      cc_catch_controller_set_progress(&catch_controller, ((uint8_t)rand()) % (uint8_t)64);
       strat_pressed = true;
     }
 
@@ -370,6 +378,7 @@ void main(void)
     /* Update functions */
     game_over = t_update_tetramino(&player_tetramino, &general_board, &randomizer, game_level);
     sc_update_screen_controller(&player_tetramino);
+    cc_catch_controller_update(&catch_controller);
 
     // Done processing, yield CPU and wait for start of next frame
     wait_vbl_done();

@@ -97,3 +97,11 @@ typedef uint8_t screen_rumble_direction_t;
 #define SCREEN_RUMBLE_DIRECTION_LEFT (0x01)
 #define SCREEN_RUMBLE_DIRECTION_DOWN (0x02)
 #define SCREEN_RUMBLE_DIRECTION_UP (0x03)
+
+/* Catch controller */
+typedef struct catch_controller_t {
+  uint8_t catch_target;
+  uint8_t catch_progress;
+  uint8_t num_bars_to_fill;
+  bool progress_dirty;
+} catch_controller_t;
