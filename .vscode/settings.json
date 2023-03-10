@@ -11,6 +11,7 @@
     "board_initialization_templates.h": "c",
     "data_tables.h": "c",
     "types.h": "c",
-    "__node_handle": "c"
+    "__node_handle": "c",
+    "__locale": "c"
   }
 }

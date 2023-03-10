@@ -15,6 +15,7 @@
 #include "delay_auto_shift_controller.h"
 #include "general_board_manager.h"
 #include "piece_randomizer.h"
+#include "pokemon_portrait.h"
 #include "screen_controller.h"
 #include "tetramino.h"
 
@@ -170,6 +171,12 @@ void main(void)
   /* Initialize Catch Controller */
   cc_catch_controller_init(&catch_controller);
 
+  /* Pokemon Portrait */
+  pokemon_portrait_t portrait;
+
+  /* Initialize Portrait */
+  pp_initialize(&portrait, 3, 12, 6, 7, 5);
+
   /* Background setup */
   set_bkg_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
   set_bkg_palette(BKGF_CGB_PAL6, 1, &bar_p[4]);
@@ -181,7 +188,14 @@ void main(void)
   set_bkg_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
 
   /* Background tiles code transfer */
+  VBK_REG = VBK_BANK_0;
   set_bkg_data(1, 20, minos);
+
+  /* test only: Pokemon portrait starts at index 100 */
+  for (uint8_t i = 0; i < 56; i++) {
+    set_bkg_data(POKEMON_PORTRAIT_STARTING_TILE + i, 1,
+                 &minos[2 * NUMBER_OF_BYTES_PER_TILE_2BPP]);
+  }
 
   /* Sprite setup */
   set_sprite_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
@@ -221,6 +235,8 @@ void main(void)
 
   set_bkg_tile_xy(0, 0, 8);
   set_bkg_tile_xy(0, 1, 9);
+
+  pp_set_noise(&portrait, 64);
 
   while (1) {
     if (game_over == true) {
@@ -332,6 +348,7 @@ void main(void)
     if ((key & J_START) && strat_pressed == false)
     {
       cc_catch_controller_set_progress(&catch_controller, ((uint8_t)rand()) % (uint8_t)64);
+      pp_set_noise(&portrait, catch_controller.catch_target);
       strat_pressed = true;
     }
 
@@ -379,6 +396,7 @@ void main(void)
     game_over = t_update_tetramino(&player_tetramino, &general_board, &randomizer, game_level);
     sc_update_screen_controller(&player_tetramino);
     cc_catch_controller_update(&catch_controller);
+    pp_update(&portrait);
 
     // Done processing, yield CPU and wait for start of next frame
     wait_vbl_done();

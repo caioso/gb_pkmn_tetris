@@ -105,3 +105,14 @@ typedef struct catch_controller_t {
   uint8_t num_bars_to_fill;
   bool progress_dirty;
 } catch_controller_t;
+
+/* Pokemon Portrait */
+typedef struct pokemon_portrait_t {
+  uint8_t noise_level;
+  uint8_t initial_tile_index;
+  uint8_t tile_w;
+  uint8_t tile_h;
+  uint8_t origin_x;
+  uint8_t origin_y;
+  bool dirty;
+} pokemon_portrait_t;
