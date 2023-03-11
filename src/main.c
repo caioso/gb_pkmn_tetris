@@ -238,7 +238,7 @@ void main(void)
   set_bkg_tile_xy(0, 0, 8);
   set_bkg_tile_xy(0, 1, 9);
 
-  pp_set_noise(&portrait, 64);
+  pp_set_noise(&portrait, 0);
 
   while (1) {
     if (game_over == true) {
@@ -349,8 +349,6 @@ void main(void)
 
     if ((key & J_START) && strat_pressed == false)
     {
-      cc_catch_controller_set_progress(&catch_controller, ((uint8_t)rand()) % (uint8_t)64);
-      pp_set_noise(&portrait, catch_controller.catch_target);
       strat_pressed = true;
     }
 
@@ -396,6 +394,7 @@ void main(void)
 
     /* Update functions */
     game_over = t_update_tetramino(&player_tetramino, &general_board, &randomizer, game_level);
+    gmb_count_broken_rows(&general_board, &catch_controller, &portrait);
     sc_update_screen_controller(&player_tetramino);
     cc_catch_controller_update(&catch_controller);
     pp_update(&portrait);

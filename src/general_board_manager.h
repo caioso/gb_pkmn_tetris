@@ -5,8 +5,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "catch_controller.h"
 #include "constants.h"
 #include "data_tables.h"
+#include "pokemon_portrait.h"
 #include "types.h"
 
 /* Public Functions*/
@@ -38,3 +40,10 @@ void gmb_remove_full_lines(board_t * board);
  * @param[in, out] board reference to board object.
  * @param[in] tetramino target tetramino to be written to the board. */
 void gmb_shine_background(board_t * board, tetramino_t * tetramino);
+
+/* @brief Count broken lines and update portrait and progress bat.
+ * @param[in, out] board reference to board object.
+ * @param[in, out] catch_controller Pokemon catch controller.
+ * @param[in, out] portrait Pokemon portait. */
+void gmb_count_broken_rows(board_t * board, catch_controller_t * catch_controller,
+                           pokemon_portrait_t * portrait);

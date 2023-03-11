@@ -14,6 +14,8 @@ void gbm_initialize_board(board_t * board,
   board->current_block_type = current_block_type;
   board->dirty = false;
   board->shine_requested = false;
+  board->rows_removed_this_frame = 0;
+  board->total_removed_lines = 0;
 }
 
 void gbm_update_board_if_needed(board_t * board) {
@@ -56,7 +58,8 @@ void gbm_update_board_if_needed(board_t * board) {
         set_bkg_tile_xy(board->shine_position[shine].x + BOARD_HORIZONTAL_OFFSET, row, 8);
       }
     }
-  board->shine_requested = false;
+
+    board->shine_requested = false;
   }
 }
 
@@ -88,6 +91,7 @@ void gmb_remove_full_lines(board_t * board) {
 
     if (line_full == true) {
       /* Mark line to be cleared */
+      board->rows_removed_this_frame++;
       board->blocks[row][0] = 2;
       board->dirty = true;
     }
@@ -116,4 +120,15 @@ void gmb_shine_background(board_t * board, tetramino_t * tetramino) {
     board->shine_position[i].y = board_row - 3;
   }
   board->shine_requested = true;
+}
+
+void gmb_count_broken_rows(board_t * board, catch_controller_t * catch_controller,
+                           pokemon_portrait_t * portrait) {
+  if (board->rows_removed_this_frame != 0) {
+    /* Test Only: multiply by 3 */
+    board->total_removed_lines += board->rows_removed_this_frame * 3;
+    cc_catch_controller_set_progress(catch_controller, board->total_removed_lines);
+    pp_set_noise(portrait, catch_controller->catch_target);
+    board->rows_removed_this_frame = 0;
+  }
 }

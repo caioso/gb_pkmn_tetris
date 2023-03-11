@@ -32,6 +32,8 @@ typedef struct board_t {
   bool shine_requested;
   uint8_t current_block_type;
   bool dirty;
+  uint8_t rows_removed_this_frame;
+  uint16_t total_removed_lines;
 } board_t;
 
 /* Tetramino-related types */
