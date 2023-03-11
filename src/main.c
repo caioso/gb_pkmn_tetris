@@ -125,13 +125,15 @@ uint16_t random_seed = 0;
 
 void main(void)
 {
+  //cpu_fast();
+
   NR52_REG = 0x80;
   NR51_REG = 0xFF;
   NR50_REG = 0x77;
 
   /* Init audio */
   __critical {
-    hUGE_init(&sample_song);
+    //hUGE_init(&sample_song);
     //add_VBL(hUGE_dosound);
   }
 
@@ -192,7 +194,7 @@ void main(void)
   set_bkg_data(1, 20, minos);
 
   /* test only: Pokemon portrait starts at index 100 */
-  for (uint8_t i = 0; i < 56; i++) {
+  for (uint8_t i = 0; i < 35; i++) {
     set_bkg_data(POKEMON_PORTRAIT_STARTING_TILE + i, 1,
                  &minos[2 * NUMBER_OF_BYTES_PER_TILE_2BPP]);
   }
