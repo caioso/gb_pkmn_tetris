@@ -35,6 +35,19 @@ void gbm_update_board_if_needed(board_t * board) {
 
           VBK_REG = VBK_ATTRIBUTES;
           set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row - 4, 6);
+
+          if ((col + 1 <= BOARD_WIDTH - 1) && (board->blocks[row][col + 1] <= 0)) {
+            VBK_REG = VBK_TILES;
+            if (row > 4 && board->blocks[row - 1][col] > 0) {
+              set_bkg_tile_xy(col + 1 + BOARD_HORIZONTAL_OFFSET, row - 4, 20);
+            } else {
+              set_bkg_tile_xy(col + 1 + BOARD_HORIZONTAL_OFFSET, row - 4, 21);
+            }
+
+            VBK_REG = VBK_ATTRIBUTES;
+            set_bkg_tile_xy(col + 1 + BOARD_HORIZONTAL_OFFSET, row - 4, 6);
+            col++;
+          }
         } else  {
           VBK_REG = VBK_TILES;
           set_bkg_tile_xy(col + BOARD_HORIZONTAL_OFFSET, row - 4, 0);

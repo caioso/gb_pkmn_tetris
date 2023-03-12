@@ -125,7 +125,7 @@ uint16_t random_seed = 0;
 
 void main(void)
 {
-  //cpu_fast();
+  cpu_fast();
 
   NR52_REG = 0x80;
   NR51_REG = 0xFF;
@@ -133,8 +133,8 @@ void main(void)
 
   /* Init audio */
   __critical {
-    //hUGE_init(&sample_song);
-    //add_VBL(hUGE_dosound);
+    hUGE_init(&sample_song);
+    add_VBL(hUGE_dosound);
   }
 
   /* bag randomizer */
@@ -191,7 +191,7 @@ void main(void)
 
   /* Background tiles code transfer */
   VBK_REG = VBK_BANK_0;
-  set_bkg_data(1, 20, minos);
+  set_bkg_data(1, 22, minos);
 
   /* test only: Pokemon portrait starts at index 100 */
   for (uint8_t i = 0; i < 35; i++) {
@@ -210,7 +210,7 @@ void main(void)
   set_sprite_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
 
   /* Sprite tiles code transfer */
-  set_sprite_data(1, 20, minos);
+  set_sprite_data(1, 22, minos);
 
   /* show background */
   SHOW_BKG;
