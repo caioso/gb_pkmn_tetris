@@ -34,7 +34,6 @@ void pp_initialize(pokemon_portrait_t * portrait, uint8_t initial_tile_index,
 }
 
 void pp_set_noise(pokemon_portrait_t * portrait, uint8_t noise_level) {
-  cpu_fast();
   VBK_REG = VBK_TILES;
   current_tile_row = 0;
   current_pixel_row = 0;
@@ -71,7 +70,6 @@ void pp_set_noise(pokemon_portrait_t * portrait, uint8_t noise_level) {
 
   set_bkg_data(POKEMON_PORTRAIT_STARTING_TILE,
                TOTAL_POKEMON_PORTRAIT_TILES, noisy_tiles_pixels);
-  cpu_slow();
 }
 
 void pp_update(pokemon_portrait_t * portrait) {

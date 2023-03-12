@@ -20,11 +20,12 @@
 
 <body onload="init()">
   <div id="png_holder" style="position:absolute; padding: 0; top: 120px; left: 20px; width : calc(50% - 50px); height: calc(100% - 160px); background-color: red;">
-    <canvas id="png"/>
+    <canvas id="tiles" style="position:relative; top:0px; left:0px;"/>
+    <canvas id="png" style="position:relative; top:0px; left:0px;"/>
     </div>
   </div>
-  <div id="tiles_holder" style="position:absolute; padding: 0; top: 120px; left: calc(50% + 10px); width : calc(50% - 50px); height: calc(100% - 160px); background-color: red;">
-    <canvas id="tiles"/>
+  <div id="palettes_holder" style="position:absolute; padding: 0; top: 120px; left: calc(50% + 10px); width : calc(50% - 50px); height: calc(100% - 160px); background-color: red;">
+    <canvas id="palettes"/>
     </div>
   </div>
   <div style="overflow:hidden; position:absolute; padding: 0px; top: 20px; left: 20px; width : calc(50% - 50px); height: 80px; background-color: white;">
@@ -35,9 +36,7 @@
     </div>
   </div>
 
-  <div id="palettes_holder" style="overflow:hidden; position:absolute; padding: 0px; top: 20px; left: calc(50% + 10px); width : calc(50% - 50px); height: 80px; background-color: red;">
-    <canvas id="palettes"/>
-    </div>
+  <div id="top_menu" style="overflow:hidden; position:absolute; padding: 0px; top: 20px; left: calc(50% + 10px); width : calc(50% - 50px); height: 80px; background-color: red;">
   </div>
 </body>
 
