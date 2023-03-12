@@ -2,6 +2,8 @@ original_canvas = null;
 original_ctx = null;
 tiles_canvas = null;
 tiles_ctx = null;
+final_palette_canvas = null;
+final_palette_ctx = null;
 palettes_canvas = null;
 palettes_ctx = null;
 unique_colors = new Array();
@@ -11,31 +13,23 @@ image_loaded = false;
 var original_image = null;
 
 tile_canvas_buttons = [
-  {x: 300, y: 10, w: 300, h: 30, mouse_out: function(){
-    palettes_ctx.fillStyle = "#C0C0C0";
-    palettes_ctx.fillRect(300, 10, 300, 30);
-
-    palettes_ctx.font = "15px Helvetica";
-    palettes_ctx.fillStyle = "black";
-    palettes_ctx.fillText("Reduce Palette", 390, 30);
-  },  mouse_over: function(){
-    palettes_ctx.fillStyle = "#808080";
-    palettes_ctx.fillRect(300, 10, 300, 30);
-
-    palettes_ctx.font = "15px Helvetica";
-    palettes_ctx.fillStyle = "black";
-    palettes_ctx.fillText("Reduce Palette", 390, 30);
-  }, on_mouse_down: function() {
-    if (this.button_state == false) {
-      reducePalettes();
-      this.button_state = true;
-    }
-  }, on_mouse_up: function() {
-    if (this.button_state == true) {
-      this.button_state = false;
-    }
-  },button_state: false},
+  {x: 300, y: 10, w: 300, h: 30,
+   mouse_out: function(){},
+   mouse_over: function(){},
+   on_mouse_down: function() {},
+   on_mouse_up: function() {},
+   button_state: false},
 ];
+
+var color_1 = null;
+var color_2 = null;
+var color_3 = null;
+var color_4 = null;
+
+var final_palette_color_1 = "white";
+var final_palette_color_2 = "white";
+var final_palette_color_3 = "white";
+var final_palette_color_4 = "white";
 
 function init() {
   original_canvas = document.getElementById("png");
@@ -58,22 +52,22 @@ function init() {
 
   palettes_canvas = document.getElementById("palettes");
   palettes_canvas.width  = document.getElementById('palettes_holder').clientWidth;
-  palettes_canvas.height = document.getElementById('palettes_holder').clientHeight;
   palettes_ctx = palettes_canvas.getContext('2d');
   palettes_ctx.fillStyle='black';
   palettes_ctx.imageSmoothingEnabled = false;
   palettes_ctx.fillRect(0,0,palettes_canvas.width,palettes_canvas.height);
 
+  final_palette_canvas = document.getElementById("final_palette");
+  final_palette_canvas.width  = document.getElementById('palette_menu').clientWidth;
+  final_palette_canvas.height = document.getElementById('palette_menu').clientHeight;
+  final_palette_ctx = final_palette_canvas.getContext('2d');
+  final_palette_ctx.fillStyle='#121212';
+  final_palette_ctx.imageSmoothingEnabled = false;
+  final_palette_ctx.fillRect(0,0,final_palette_canvas.width,final_palette_canvas.height);
+
   palettes_ctx.font = "20px Helvetica";
   palettes_ctx.fillStyle = "white";
   palettes_ctx.fillText("Original Picture Colors", 15, 30);
-
-  palettes_ctx.fillStyle = "grey";
-  palettes_ctx.fillRect(300, 10, 300, 30);
-
-  palettes_ctx.font = "15px Helvetica";
-  palettes_ctx.fillStyle = "white";
-  palettes_ctx.fillText("Reduce Palette", 390, 30);
 
   palettes_canvas.onmousemove = function(e) {
 
@@ -142,9 +136,29 @@ function init() {
         var fr = new FileReader();
         fr.onload = () => showImage(fr);
         fr.readAsDataURL(files[0]);
-
     }
   }
+
+  color_1 = document.getElementById("final_color_1");
+  color_1.addEventListener("input", function(){
+    final_palette_color_1 = color_1.value;
+    showFinalPalette();
+  }, false);
+  color_2 = document.getElementById("final_color_2");
+  color_2.addEventListener("input", function(){
+    final_palette_color_2 = color_2.value;
+    showFinalPalette();
+  }, false);
+  color_3 = document.getElementById("final_color_3");
+  color_3.addEventListener("input", function(){
+    final_palette_color_3 = color_3.value;
+    showFinalPalette();
+  }, false);
+  color_4 = document.getElementById("final_color_4");
+  color_4.addEventListener("input", function(){
+    final_palette_color_4 = color_4.value;
+    showFinalPalette();
+  }, false);
 }
 
 function showImage(fileReader) {
@@ -153,6 +167,7 @@ function showImage(fileReader) {
     getImageData(img);
     showTiles(img, 1);
     showPalettes(img);
+    showFinalPalette();
     image_loaded = true;
   }
   img.src = fileReader.result;
@@ -208,6 +223,12 @@ function showPalettes() {
     palettes_ctx.fillStyle = `rgba(${unique_sorted_colors[i][0]}, ${unique_sorted_colors[i][1]}, ${unique_sorted_colors[i][2]}, 1)`;
     palettes_ctx.fillRect(horizontal_counter, vertical_counter, 100, 100);
 
+    palettes_ctx.fillStyle = `rgba(0, 0, 0, 255)`;
+    palettes_ctx.fillRect(horizontal_counter + 69, vertical_counter + 69, 31, 31);
+
+    palettes_ctx.fillStyle = `rgba(255, 255, 255, 255)`;
+    palettes_ctx.fillRect(horizontal_counter + 70, vertical_counter + 70, 30, 30);
+
     var index = findObject(unique_sorted_colors[i], unique_colors_counter);
       if (index >= 0) {
         palettes_ctx.font="10px helvetica";
@@ -228,47 +249,29 @@ function showPalettes() {
   }
 }
 
-function reducePalettes() {
-  /* find four most common palettes */
-  if (image_loaded == true && unique_colors_counter.length > 4) {
-    var sorted_color_by_occurences =  unique_colors_counter.sort(function(a, b) {
-        return a.counter - b.counter;
-    });
-    console.log(sorted_color_by_occurences);
+function showFinalPalette() {
+  var horizontal_counter = 20;
+  var vertical_counter = 20;
+  var colors = [final_palette_color_1, final_palette_color_2, final_palette_color_3, final_palette_color_4]
+  for (var i = 0; i < 4; i++) {
+    final_palette_ctx.fillStyle = colors[i]
+    final_palette_ctx.fillRect(horizontal_counter, vertical_counter, 100, 100);
+
+    final_palette_ctx.font="10px helvetica";
+    final_palette_ctx.shadowColor="black";
+    final_palette_ctx.shadowBlur = 3;
+    final_palette_ctx.lineWidth = 2;
+    final_palette_ctx.strokeText(i, horizontal_counter + 5, vertical_counter + 15);
+    final_palette_ctx.shadowBlur = 0;
+    final_palette_ctx.fillStyle="white";
+    final_palette_ctx.fillText(i, horizontal_counter + 5, vertical_counter + 15);
+
+    horizontal_counter += 110;
+    if (horizontal_counter >= palettes_canvas.width || horizontal_counter + 100 >= palettes_canvas.width) {
+      vertical_counter += 110;
+      horizontal_counter = 20;
+    }
   }
-
-  var reduced_palette = new Array();
-  reduced_palette[0] = sorted_color_by_occurences[sorted_color_by_occurences.length - 1];
-  reduced_palette[1] = sorted_color_by_occurences[sorted_color_by_occurences.length - 2];
-  reduced_palette[2] = sorted_color_by_occurences[sorted_color_by_occurences.length - 3];
-  reduced_palette[3] = sorted_color_by_occurences[sorted_color_by_occurences.length - 4];
-
-  var new_unique_sorted_colors = []
-  new_unique_sorted_colors[0] = reduced_palette[0].color;
-  new_unique_sorted_colors[1] = reduced_palette[1].color;
-  new_unique_sorted_colors[2] = reduced_palette[2].color;
-  new_unique_sorted_colors[3] = reduced_palette[3].color;
-
-  unique_sorted_colors = new_unique_sorted_colors.map(function(c, i) {
-    // Convert to HSL and keep track of original indices
-    return {color: rgbToHsl(c), index: i};
-  }).sort(function(c1, c2) {
-    // Sort by hue
-    return c1.color[0] - c2.color[0];
-  }).map(function(data) {
-    // Retrieve original RGB color
-    return new_unique_sorted_colors[data.index];
-  });
-
-  unique_sorted_colors = new_unique_sorted_colors;
-  unique_colors_counter = reduced_palette;
-
-  /* clear existing palettes */
-  palettes_ctx.fillStyle="black";
-  palettes_ctx.fillRect(20,50,palettes_canvas.width,palettes_canvas.height);
-
-  showPalettes();
-  remap_colors();
 }
 
 function remap_colors() {
