@@ -19,6 +19,8 @@
 #include "screen_controller.h"
 #include "tetramino.h"
 
+#include "p121.h"
+
 /* Game Assets */
 #include "minos.h"
 
@@ -180,14 +182,14 @@ void main(void)
   pp_initialize(&portrait, 3, 12, 6, 7, 5);
 
   /* Background setup */
-  set_bkg_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);
-  set_bkg_palette(BKGF_CGB_PAL6, 1, &bar_p[4]);
-  set_bkg_palette(BKGF_CGB_PAL5, 1, &bar_p[8]);
-  set_bkg_palette(BKGF_CGB_PAL4, 1, &bar_p[12]);
-  set_bkg_palette(BKGF_CGB_PAL3, 1, &bar_p[16]);
-  set_bkg_palette(BKGF_CGB_PAL2, 1, &bar_p[20]);
-  set_bkg_palette(BKGF_CGB_PAL1, 1, &bar_p[24]);
-  set_bkg_palette(BKGF_CGB_PAL0, 1, &bar_p[28]);
+  set_bkg_palette(BKGF_CGB_PAL0, 1, &p121_palettes[0]);
+  set_bkg_palette(BKGF_CGB_PAL1, 1, &p121_palettes[4]);
+  set_bkg_palette(BKGF_CGB_PAL2, 1, &bar_p[8]);
+  set_bkg_palette(BKGF_CGB_PAL3, 1, &bar_p[12]);
+  set_bkg_palette(BKGF_CGB_PAL4, 1, &bar_p[0]);
+  set_bkg_palette(BKGF_CGB_PAL5, 1, &bar_p[4]);
+  set_bkg_palette(BKGF_CGB_PAL6, 1, &bar_p[8]);
+  set_bkg_palette(BKGF_CGB_PAL7, 1, &bar_p[12]);
 
   /* Background tiles code transfer */
   VBK_REG = VBK_BANK_0;
@@ -196,7 +198,7 @@ void main(void)
   /* test only: Pokemon portrait starts at index 100 */
   for (uint8_t i = 0; i < 35; i++) {
     set_bkg_data(POKEMON_PORTRAIT_STARTING_TILE + i, 1,
-                 &minos[2 * NUMBER_OF_BYTES_PER_TILE_2BPP]);
+                 &p121_tiles[2 * NUMBER_OF_BYTES_PER_TILE_2BPP]);
   }
 
   /* Sprite setup */

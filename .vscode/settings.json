@@ -12,6 +12,24 @@
     "data_tables.h": "c",
     "types.h": "c",
     "__node_handle": "c",
-    "__locale": "c"
+    "__locale": "c",
+    "minos.h": "c",
+    "p121.h": "c",
+    "__bit_reference": "c",
+    "atomic": "c",
+    "bitset": "c",
+    "chrono": "c",
+    "cstddef": "c",
+    "deque": "c",
+    "__memory": "c",
+    "limits": "c",
+    "locale": "c",
+    "optional": "c",
+    "ratio": "c",
+    "system_error": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "vector": "c",
+    "*.ipp": "c"
   }
 }
