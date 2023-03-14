@@ -179,11 +179,10 @@ void main(void)
   pokemon_portrait_t portrait;
 
   /* Initialize Portrait */
-  pp_initialize(&portrait, 3, 12, 6, 7, 5);
+  pp_initialize(&portrait, 3, p121_tiles, p121_map_attributes, p121_palettes, 12, 6, 7, 5);
 
   /* Background setup */
-  set_bkg_palette(BKGF_CGB_PAL0, 1, &p121_palettes[0]);
-  set_bkg_palette(BKGF_CGB_PAL1, 1, &p121_palettes[4]);
+
   set_bkg_palette(BKGF_CGB_PAL2, 1, &bar_p[8]);
   set_bkg_palette(BKGF_CGB_PAL3, 1, &bar_p[12]);
   set_bkg_palette(BKGF_CGB_PAL4, 1, &bar_p[0]);
@@ -194,12 +193,6 @@ void main(void)
   /* Background tiles code transfer */
   VBK_REG = VBK_BANK_0;
   set_bkg_data(1, 22, minos);
-
-  /* test only: Pokemon portrait starts at index 100 */
-  for (uint8_t i = 0; i < 35; i++) {
-    set_bkg_data(POKEMON_PORTRAIT_STARTING_TILE + i, 1,
-                 &p121_tiles[2 * NUMBER_OF_BYTES_PER_TILE_2BPP]);
-  }
 
   /* Sprite setup */
   set_sprite_palette(BKGF_CGB_PAL7, 1, &bar_p[0]);

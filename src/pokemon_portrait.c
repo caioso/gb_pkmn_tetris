@@ -10,6 +10,8 @@ static uint8_t current_pixel_row = 0;
 static uint8_t current_tile_row = 0;
 static uint8_t noise_bar_animation_delay = 0;
 void pp_initialize(pokemon_portrait_t * portrait, uint8_t initial_tile_index,
+                   uint8_t * tile_bytes, uint8_t * attribute_bytes,
+                   uint8_t * palette_bytes,
                    uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
   portrait->noise_level = 0;
   portrait->initial_tile_index = initial_tile_index;
@@ -18,6 +20,19 @@ void pp_initialize(pokemon_portrait_t * portrait, uint8_t initial_tile_index,
   portrait->origin_x = x;
   portrait->origin_y = y;
   portrait->dirty = true;
+  portrait->tile_bytes = tile_bytes;
+  portrait->attribute_bytes = attribute_bytes;
+  portrait->palette_bytes = palette_bytes;
+
+  /* Load Palettes */
+  set_bkg_palette(BKGF_CGB_PAL0, 1, &portrait->palette_bytes[0]);
+  set_bkg_palette(BKGF_CGB_PAL1, 1, &portrait->palette_bytes[4]);
+
+  /* Load Tiles */
+  for (uint8_t i = 0; i < 35; i++) {
+    set_bkg_data(POKEMON_PORTRAIT_STARTING_TILE + i, 1,
+                 &portrait->tile_bytes[2 * NUMBER_OF_BYTES_PER_TILE_2BPP]);
+  }
 
   VBK_REG = VBK_TILES;
   uint8_t portrait_tiles[TOTAL_POKEMON_PORTRAIT_TILES];
@@ -29,17 +44,19 @@ void pp_initialize(pokemon_portrait_t * portrait, uint8_t initial_tile_index,
       tile_counter++;
     }
   }
-  set_bkg_tiles(portrait->origin_x, portrait->origin_y, POKEMON_PORTRAIT_COLS, POKEMON_PORTRAIT_ROWS, portrait_tiles);
+  set_bkg_tiles(portrait->origin_x, portrait->origin_y,
+                POKEMON_PORTRAIT_COLS, POKEMON_PORTRAIT_ROWS, portrait_tiles);
 
   VBK_REG = VBK_ATTRIBUTES;
   tile_counter = 0;
   for (uint8_t i = 0; i < portrait->tile_h; i++) {
     for (uint8_t j = 0; j < portrait->tile_w; j++) {
-      portrait_tiles[i*portrait->tile_w + j] = p121_map_attributes[tile_counter]; /* Should be updated to the actual pokemon tiles. */
+      portrait_tiles[i*portrait->tile_w + j] = portrait->attribute_bytes[tile_counter]; /* Should be updated to the actual pokemon tiles. */
       tile_counter++;
     }
   }
-  set_bkg_tiles(portrait->origin_x, portrait->origin_y, POKEMON_PORTRAIT_COLS, POKEMON_PORTRAIT_ROWS, portrait_tiles);
+  set_bkg_tiles(portrait->origin_x, portrait->origin_y,
+                POKEMON_PORTRAIT_COLS, POKEMON_PORTRAIT_ROWS, portrait_tiles);
 }
 
 void pp_set_noise(pokemon_portrait_t * portrait, uint8_t noise_level) {
@@ -47,64 +64,66 @@ void pp_set_noise(pokemon_portrait_t * portrait, uint8_t noise_level) {
   current_tile_row = 0;
   current_pixel_row = 0;
   portrait->noise_level = noise_level;
+
   uint8_t backup_counter = 0;
   uint16_t counter = 0;
   for (uint8_t i = 0; i < TOTAL_POKEMON_PORTRAIT_TILES; i++) {
 
     uint8_t tile = 0;
     for (uint8_t j = 0; j < NUMBER_OF_BYTES_PER_TILE_2BPP; j += 2) {
-      uint8_t pixel_msb = \
-        (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
-      uint8_t pixel_lsb = \
-        (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
+      uint8_t pixel_msb = portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j] = \
+        (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
+      uint8_t pixel_lsb = portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1] = \
+        (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
 
       uint8_t value = (((uint8_t)rand()));
       if (value % (uint8_t)MAX_NOISE_LEVEL >= (portrait->noise_level)) {
-          pixel_msb &= value;
-          pixel_lsb &= value;
-      }
-      if ((i >= 1 && i <= 5) || (i >= 29 && i <= 33)) {
-        if (j == 0 || j == 14) {
-          pixel_msb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
-          pixel_lsb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
-        }
-      } else if (i == 7 || i == 14 || i == 21) {
-        pixel_msb = (0x80 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0x7F & value);
-        pixel_lsb = (0x80 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0x7F & value);
-      } else if (i == 13 || i == 20 || i == 27) {
-        pixel_msb = (0x01 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0xFE & value);
-        pixel_lsb = (0x01 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]))| (0xFE & value);
-      } else if (i == 0) {
-        if (j >= 2) {
-          pixel_msb = (0x80 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0x7F & value);
-          pixel_lsb = (0x80 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0x7F & value);
-        } else {
-          pixel_msb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
-          pixel_lsb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
-        }
-      }  else if (i == 6) {
-        if (j >= 2) {
-          pixel_msb = (0x01 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0xFE & value);
-          pixel_lsb = (0x01 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0xFE & value);
-        } else {
-          pixel_msb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
-          pixel_lsb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
-        }
-      } else if (i == 28) {
-        if (j < 14) {
-          pixel_msb = (0x80 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0x7F & value);
-          pixel_lsb = (0x80 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0x7F & value);
-        } else {
-          pixel_msb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
-          pixel_lsb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
-        }
-      } else if (i == 34) {
-        if (j < 14) {
-          pixel_msb = (0x01 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0xFE & value);
-          pixel_lsb = (0x01 & (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0xFE & value);
-        } else {
-          pixel_msb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
-          pixel_lsb = (p121_tiles[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
+          pixel_msb = portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j] & value;
+          pixel_lsb = portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1] & value;
+
+        if ((i >= 1 && i <= 5) || (i >= 29 && i <= 33)) {
+          if (j == 0 || j == 14) {
+            pixel_msb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
+            pixel_lsb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
+          }
+        } else if (i == 7 || i == 14 || i == 21) {
+          pixel_msb = (0x80 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0x7F & value);
+          pixel_lsb = (0x80 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0x7F & value);
+        } else if (i == 13 || i == 20 || i == 27) {
+          pixel_msb = (0x01 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0xFE & value);
+          pixel_lsb = (0x01 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]))| (0xFE & value);
+        } else if (i == 0) {
+          if (j >= 2) {
+            pixel_msb = (0x80 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0x7F & value);
+            pixel_lsb = (0x80 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0x7F & value);
+          } else {
+            pixel_msb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
+            pixel_lsb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
+          }
+        }  else if (i == 6) {
+          if (j >= 2) {
+            pixel_msb = (0x01 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0xFE & value);
+            pixel_lsb = (0x01 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0xFE & value);
+          } else {
+            pixel_msb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
+            pixel_lsb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
+          }
+        } else if (i == 28) {
+          if (j < 14) {
+            pixel_msb = (0x80 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0x7F & value);
+            pixel_lsb = (0x80 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0x7F & value);
+          } else {
+            pixel_msb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
+            pixel_lsb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
+          }
+        } else if (i == 34) {
+          if (j < 14) {
+            pixel_msb = (0x01 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j])) | (0xFE & value);
+            pixel_lsb = (0x01 & (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1])) | (0xFE & value);
+          } else {
+            pixel_msb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j]);
+            pixel_lsb = (portrait->tile_bytes[i*NUMBER_OF_BYTES_PER_TILE_2BPP + j + 1]);
+          }
         }
       }
 

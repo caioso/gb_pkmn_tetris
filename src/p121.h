@@ -26,7 +26,6 @@ BANKREF_EXTERN(p121)
 extern const palette_color_t p121_palettes[8];
 extern const uint8_t p121_tiles[560];
 
-extern const unsigned char p121_map[35];
 extern const unsigned char p121_map_attributes[35];
 
 #endif

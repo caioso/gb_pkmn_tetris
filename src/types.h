@@ -2,6 +2,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <gbdk/platform.h>
+#include <gbdk/metasprites.h>
+
 
 /* useful types */
 typedef struct point_2d_t {
@@ -116,5 +119,8 @@ typedef struct pokemon_portrait_t {
   uint8_t tile_h;
   uint8_t origin_x;
   uint8_t origin_y;
+  uint8_t * tile_bytes;
+  uint8_t * attribute_bytes;
+  palette_color_t * palette_bytes;
   bool dirty;
 } pokemon_portrait_t;
