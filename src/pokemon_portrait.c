@@ -1,6 +1,5 @@
 #include "pokemon_portrait.h"
 #include "constants.h"
-#include "p121.h"
 #include <rand.h>
 
 static uint8_t noisy_tiles_pixels[NUMBER_OF_BYTES_PER_TILE_2BPP * TOTAL_POKEMON_PORTRAIT_TILES];

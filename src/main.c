@@ -20,6 +20,7 @@
 #include "tetramino.h"
 
 #include "p121.h"
+#include "p131.h"
 
 /* Game Assets */
 #include "minos.h"
@@ -179,7 +180,7 @@ void main(void)
   pokemon_portrait_t portrait;
 
   /* Initialize Portrait */
-  pp_initialize(&portrait, 3, p121_tiles, p121_map_attributes, p121_palettes, 12, 6, 7, 5);
+  pp_initialize(&portrait, 3, p131_tiles, p131_map_attributes, p131_palettes, 12, 6, 7, 5);
 
   /* Background setup */
 
